@@ -1,0 +1,15 @@
+{
+  "name": "aarogyalink-frontend",
+  "version": "1.0.0",
+  "description": "AarogyaLink — Bihar Pilot Emergency Medical Care Unified Frontend",
+  "main": "index.html",
+  "keywords": [
+    "aarogyalink",
+    "emergency-medical-services",
+    "bihar-pilot",
+    "ambulance-matching",
+    "healthcare"
+  ],
+  "author": "Farzooque Hasan",
+  "license": "MIT"
+}

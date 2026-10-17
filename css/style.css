@@ -1,0 +1,349 @@
+@import url('https://fonts.googleapis.com/css2?family=Inria+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Core Brand Surfaces (matches AarogyaLink.pptx template) */
+  --al-bg-canvas: #F4EEDF;        /* Warm Ivory main background */
+  --al-bg-sand: #E6DEC8;          /* Warm Sand secondary cards & blobs */
+  --al-bg-card: #FFFFFF;          /* Crisp White active match card */
+
+  /* Typography & Icon Ink */
+  --al-ink-primary: #13213A;      /* Deep Midnight Navy (AAA contrast) */
+  --al-ink-muted: #4A586E;        /* Slate Navy for secondary labels */
+  --al-ink-on-brand: #F4EEDF;     /* Warm Ivory text inside green pills */
+
+  /* Brand & Emergency Semantic Accents */
+  --al-brand-green: #317E33;      /* Vitality Emerald: Confirmed / Oxygen Ready / Green Tier */
+  --al-brand-green-dark: #235E25; /* Dark emerald for hover states */
+  --al-brand-green-soft: #E3F1E4; /* Soft green tint for "Why This Match" pills */
+  --al-sos-red: #D63B2F;          /* One-Tap SOS Button & critical alert */
+  --al-sos-red-soft: #FCE8E6;     /* Soft coral tint for critical badges */
+  --al-warn-amber: #E5B842;       /* Missing-Gear Early Alert & Yellow Standby Tier */
+  --al-warn-amber-soft: #FDF6E2;  /* Soft amber background for Hospital Prep banner */
+
+  /* Typography */
+  --font-display: 'Inria Serif', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Borders & Pill Geometry (mirrors template pill banners) */
+  --radius-pill: 9999px;
+  --radius-card: 16px;
+  --radius-btn: 12px;
+  --border-ink: 2px solid #13213A;
+  --shadow-card: 0 6px 0 #13213A; /* Crisp offset border-shadow matching the deck badges */
+  --shadow-card-sm: 0 4px 0 #13213A;
+  --shadow-card-lg: 0 8px 0 #13213A;
+  --shadow-pressed: 0 2px 0 #13213A;
+}
+
+/* Base Reset & Typography */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--al-bg-canvas);
+  color: var(--al-ink-primary);
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.font-mono-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Signature Brand Cards from AarogyaLink Design System */
+.al-card {
+  background-color: var(--al-bg-card);
+  border: var(--border-ink);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.al-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-lg);
+}
+
+.al-card-static {
+  background-color: var(--al-bg-card);
+  border: var(--border-ink);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.al-card-sand {
+  background-color: var(--al-bg-sand);
+  border: var(--border-ink);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card-sm);
+}
+
+.al-card-green {
+  background-color: var(--al-brand-green);
+  color: var(--al-ink-on-brand);
+  border: var(--border-ink);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.al-card-soft-green {
+  background-color: var(--al-brand-green-soft);
+  border: var(--border-ink);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card-sm);
+}
+
+.al-card-amber {
+  background-color: var(--al-warn-amber-soft);
+  border: var(--border-ink);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card-sm);
+}
+
+.al-card-red {
+  background-color: var(--al-sos-red-soft);
+  border: var(--border-ink);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card-sm);
+}
+
+/* Pill Banners & Badges */
+.al-pill-banner {
+  background-color: var(--al-brand-green);
+  color: var(--al-ink-on-brand);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 3px 0 var(--al-ink-primary);
+  font-family: var(--font-display);
+  font-style: italic;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.al-pill-navy {
+  background-color: var(--al-ink-primary);
+  color: var(--al-ink-on-brand);
+  border: 2px solid var(--al-ink-primary);
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
+.al-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--al-ink-primary);
+}
+
+/* Tactile Buttons */
+.al-btn {
+  border: var(--border-ink);
+  border-radius: var(--radius-btn);
+  box-shadow: var(--shadow-card-sm);
+  font-weight: 700;
+  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-family: var(--font-sans);
+}
+
+.al-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.al-btn:active {
+  transform: translateY(2px);
+  box-shadow: var(--shadow-pressed);
+}
+
+.al-btn-primary {
+  background-color: var(--al-brand-green);
+  color: var(--al-ink-on-brand);
+}
+
+.al-btn-primary:hover {
+  background-color: var(--al-brand-green-dark);
+}
+
+.al-btn-navy {
+  background-color: var(--al-ink-primary);
+  color: var(--al-ink-on-brand);
+}
+
+.al-btn-danger {
+  background-color: var(--al-sos-red);
+  color: #FFFFFF;
+}
+
+.al-btn-sand {
+  background-color: var(--al-bg-sand);
+  color: var(--al-ink-primary);
+}
+
+.al-btn-white {
+  background-color: #FFFFFF;
+  color: var(--al-ink-primary);
+}
+
+.al-btn-amber {
+  background-color: var(--al-warn-amber);
+  color: var(--al-ink-primary);
+}
+
+/* Dotted Rules */
+.al-dotted-rule {
+  border-bottom: 3px dotted var(--al-brand-green);
+}
+
+.al-dotted-rule-navy {
+  border-bottom: 3px dotted var(--al-ink-primary);
+}
+
+/* SOS Pulsing Animation */
+@keyframes sosPulse {
+  0%, 100% {
+    box-shadow: var(--shadow-card), 0 0 0 0 rgba(214, 59, 47, 0.55);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: var(--shadow-card), 0 0 0 16px rgba(214, 59, 47, 0);
+    transform: scale(1.02);
+  }
+}
+
+.sos-pulse-btn {
+  animation: sosPulse 2.2s infinite;
+}
+
+/* Route Line Movement */
+@keyframes routeDash {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+
+.route-line-animated {
+  stroke-dasharray: 8 6;
+  animation: routeDash 1.2s linear infinite;
+}
+
+/* Ringing Alert Animation for Hospital Desk */
+@keyframes alertFlash {
+  0%, 100% {
+    background-color: var(--al-bg-card);
+    border-color: var(--al-ink-primary);
+  }
+  50% {
+    background-color: var(--al-warn-amber-soft);
+    border-color: var(--al-sos-red);
+  }
+}
+
+.incoming-alert-flash {
+  animation: alertFlash 1.5s infinite ease-in-out;
+}
+
+/* Live Radar Pulse */
+@keyframes radarPing {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  70%, 100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.radar-ping {
+  animation: radarPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Responsive Table */
+.al-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-card);
+  border: var(--border-ink);
+  box-shadow: var(--shadow-card-sm);
+  background-color: #FFFFFF;
+}
+
+.al-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.825rem;
+}
+
+.al-table th {
+  background-color: var(--al-ink-primary);
+  color: var(--al-ink-on-brand);
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+.al-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(19, 33, 58, 0.15);
+  color: var(--al-ink-primary);
+}
+
+.al-table tr:last-child td {
+  border-bottom: none;
+}
+
+.al-table tr:hover {
+  background-color: rgba(244, 238, 223, 0.4);
+}
+
+/* Toast Container */
+#toastContainer {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  max-width: 24rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Nav Link Active Indicator */
+.nav-link-active {
+  background-color: var(--al-ink-primary) !important;
+  color: var(--al-ink-on-brand) !important;
+  box-shadow: var(--shadow-card-sm) !important;
+}
+
+/* Sound Toggle Icon State */
+.sound-active {
+  color: var(--al-brand-green);
+}

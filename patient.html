@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AarogyaLink — Patient &amp; Family Caller Emergency App</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- TOP SHARED NAV BAR -->
+  <header class="sticky top-0 z-40 bg-[#F4EEDF]/95 backdrop-blur border-b-2 border-[#13213A] px-3 sm:px-6 py-2.5">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand Logo & Identity -->
+      <a href="index.html" class="flex items-center gap-3 text-decoration-none text-inherit">
+        <div class="w-10 h-10 rounded-xl bg-[#317E33] border-2 border-[#13213A] shadow-[0_3px_0_#13213A] flex items-center justify-center text-[#F4EEDF] font-display font-bold text-xl">
+          ✚
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-display font-bold text-xl sm:text-2xl tracking-tight text-[#13213A] leading-none">AarogyaLink</span>
+            <span class="al-pill-banner text-xs px-2 py-0.5 not-italic font-sans font-semibold">Bihar Pilot</span>
+          </div>
+          <p class="text-xs text-[#4A586E] font-medium hidden sm:block">Samastipur District Emergency Medical Network</p>
+        </div>
+      </a>
+
+      <!-- Role-Based Navigation Switcher -->
+      <nav class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+        <a href="patient.html" class="al-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 nav-link-active">
+          <span>📱</span> <span>Patient App</span>
+        </a>
+        <a href="driver.html" class="al-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-white text-[#13213A]">
+          <span>🚑</span> <span>Ambulance</span>
+        </a>
+        <a href="hospital.html" class="al-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-white text-[#13213A]">
+          <span>🏥</span> <span>Hospital Desk</span>
+        </a>
+        <a href="controller.html" class="al-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-white text-[#13213A]">
+          <span>🛡️</span> <span>EMS Admin</span>
+        </a>
+        <a href="index.html" class="al-btn px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1 bg-[#E6DEC8] text-[#13213A]">
+          <span>⚡</span> <span>Hub / Quad</span>
+        </a>
+      </nav>
+
+      <!-- Global Controls: Lang + Audio + Reset -->
+      <div class="flex items-center gap-1.5">
+        <button id="toggleLangBtn" class="al-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-[#13213A]" title="Switch English / Hindi">
+          🌐 <span id="langLabel">EN / हिन्दी</span>
+        </button>
+        <button id="toggleAudioBtn" class="al-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-[#13213A]" title="Toggle Audio Chimes">
+          🔊 <span id="audioLabel">Sound</span>
+        </button>
+        <button id="resetDemoBtn" class="al-btn px-2 py-1 rounded-lg text-xs font-bold bg-[#E6DEC8] text-[#13213A]" title="Reset Scenario">
+          ↺ Reset
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- QUICK DEMO STEPPER BAR -->
+  <aside class="bg-[#E6DEC8] border-b-2 border-[#13213A] px-3 sm:px-6 py-2">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-[#13213A] uppercase tracking-wider flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#317E33] inline-block radar-ping"></span>
+          Cross-Tab State:
+        </span>
+        <div class="flex items-center gap-1">
+          <button data-step="idle" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">0. Idle</button>
+          <button data-step="dispatched" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">1. SOS</button>
+          <button data-step="confirmed" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-[#317E33] text-[#F4EEDF]">2. Confirmed</button>
+          <button data-step="reroute" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">3. Reroute</button>
+          <button data-step="arrived" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">4. Arrived</button>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-[#4A586E] font-medium hidden md:inline">Open <a href="hospital.html" target="_blank" class="font-bold underline text-[#13213A]">Hospital Desk</a> in a 2nd tab to test live two-way lock!</span>
+        <button id="toggleNetworkBtn" class="al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">
+          <span id="netDot">🟢</span> <span id="netText">4G Live</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN PATIENT APP CONTENT -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-6">
+
+    <!-- Header Section -->
+    <div class="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div>
+        <div class="inline-block al-pill-banner px-4 py-1 text-sm sm:text-base mb-1">
+          Portal 1 · Patient &amp; Family Caller Emergency App
+        </div>
+        <h1 class="font-display font-bold text-2xl sm:text-4xl text-[#13213A] tracking-tight">
+          One-Tap SOS, Plain-English Match &amp; Ready Hospital Lock
+        </h1>
+        <p class="text-sm text-[#4A586E] mt-1 font-medium">
+          Built for rural &amp; semi-urban Bihar: instant matching by ETA &amp; equipment, zero confusing menus, 100% free for families.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 bg-white border-2 border-[#13213A] rounded-xl px-3 py-2 shadow-[0_3px_0_#13213A]">
+        <span class="text-xl">🛡️</span>
+        <div class="text-xs">
+          <div class="font-bold text-[#13213A]">Ethical Equality Guarantee</div>
+          <div class="text-[#4A586E]">Zero paid priority · Ranked strictly by survival fit</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Two-Column Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- LEFT COLUMN: Mobile Phone Mockup Frame (Caller Experience) -->
+      <div class="lg:col-span-5">
+        <div class="al-card-static p-4 sm:p-5 bg-[#F4EEDF] border-4 border-[#13213A] rounded-2xl relative shadow-[0_8px_0_#13213A]">
+          
+          <!-- Phone Status Bar -->
+          <div class="flex items-center justify-between pb-3 mb-3 border-b-2 border-[#13213A] text-xs font-bold">
+            <div class="flex items-center gap-1.5">
+              <span class="px-2 py-0.5 rounded bg-[#317E33] text-[#F4EEDF] font-mono-num">FREE SERVICE</span>
+              <span id="patientNetBadge" class="px-2 py-0.5 rounded bg-white border border-[#13213A]">🟢 4G Live</span>
+            </div>
+            <span class="font-mono-num text-[#13213A]" id="patientCaseId">Case #SOS-8492</span>
+          </div>
+
+          <!-- Pickup Landmark & Village Selector -->
+          <div class="bg-white border-2 border-[#13213A] rounded-xl p-3 mb-4 shadow-[0_3px_0_#13213A]">
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="landmarkSelect" class="text-xs font-bold uppercase tracking-wider text-[#4A586E]" id="labelLandmark">
+                📍 Pickup Landmark (Samastipur)
+              </label>
+              <span class="text-[11px] font-mono-num font-bold text-[#317E33]">GPS ±12m Accurate</span>
+            </div>
+            <select id="landmarkSelect" class="w-full text-sm font-bold text-[#13213A] bg-[#F4EEDF] border-2 border-[#13213A] rounded-lg px-2.5 py-2 focus:outline-none">
+              <option value="Near Kali Mandir, Ward 4, Samastipur">Near Kali Mandir, Ward 4, Samastipur</option>
+              <option value="Samastipur Railway Gate #2 (East Chowk)">Samastipur Railway Gate #2 (East Chowk)</option>
+              <option value="Karpoori Gram Primary School Road">Karpoori Gram Primary School Road</option>
+              <option value="Tajpur NH-28 Overbridge Pillar #14">Tajpur NH-28 Overbridge Pillar #14</option>
+            </select>
+            
+            <div class="grid grid-cols-2 gap-2 mt-2.5">
+              <button id="recordVoiceBtn" class="al-btn bg-[#E6DEC8] text-[#13213A] text-xs font-bold py-2 px-2 rounded-lg flex items-center justify-center gap-1.5">
+                <span>🎙️</span> <span id="voiceBtnText">Record 5s Voice Landmark</span>
+              </button>
+              <button id="offlineSmsBtn" class="al-btn bg-white text-[#13213A] text-xs font-bold py-2 px-2 rounded-lg flex items-center justify-center gap-1.5">
+                <span>📲</span> <span>2G SMS Backup</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Emergency Symptom & Gear Match Selector -->
+          <div class="mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#13213A]" id="labelEmergencyNeed">
+                1. What does the patient need? (1-Tap)
+              </span>
+              <span class="text-[11px] font-semibold text-[#317E33]">Pre-stages Gear + Bed</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2" id="symptomChipsContainer">
+              <button data-symptom="oxygen" class="symptom-chip al-btn px-3 py-2 rounded-xl text-left text-xs font-bold bg-[#13213A] text-[#F4EEDF] flex items-center gap-2">
+                <span class="text-lg">🫁</span>
+                <div>
+                  <div class="font-bold">Breathing / O₂</div>
+                  <div class="text-[10px] opacity-80 font-normal">Needs Oxygen + ICU</div>
+                </div>
+              </button>
+              <button data-symptom="cardiac" class="symptom-chip al-btn px-3 py-2 rounded-xl text-left text-xs font-bold bg-white text-[#13213A] flex items-center gap-2">
+                <span class="text-lg">❤️</span>
+                <div>
+                  <div class="font-bold">Chest Pain</div>
+                  <div class="text-[10px] text-[#4A586E] font-normal">Monitor + Defib</div>
+                </div>
+              </button>
+              <button data-symptom="trauma" class="symptom-chip al-btn px-3 py-2 rounded-xl text-left text-xs font-bold bg-white text-[#13213A] flex items-center gap-2">
+                <span class="text-lg">🩸</span>
+                <div>
+                  <div class="font-bold">Road Trauma</div>
+                  <div class="text-[10px] text-[#4A586E] font-normal">Suction + Stretcher</div>
+                </div>
+              </button>
+              <button data-symptom="maternal" class="symptom-chip al-btn px-3 py-2 rounded-xl text-left text-xs font-bold bg-white text-[#13213A] flex items-center gap-2">
+                <span class="text-lg">🤰</span>
+                <div>
+                  <div class="font-bold">Maternity</div>
+                  <div class="text-[10px] text-[#4A586E] font-normal">Labor Ward Ready</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- GIANT ONE-TAP SOS BUTTON -->
+          <div class="my-4 text-center">
+            <button id="mainSosBtn" class="w-full py-4 sm:py-5 px-5 rounded-2xl bg-[#D63B2F] text-[#F4EEDF] border-2 border-[#13213A] sos-pulse-btn flex flex-col items-center justify-center gap-1.5 cursor-pointer transition transform active:scale-95">
+              <div class="flex items-center gap-2 text-xl sm:text-2xl font-display font-bold tracking-wide">
+                <span>🆘</span>
+                <span id="sosTitle">TAP FOR EMERGENCY AMBULANCE</span>
+              </div>
+              <span id="sosSubtitle" class="text-xs sm:text-sm font-medium text-[#F4EEDF]/95">
+                One tap matches nearest oxygen ambulance &amp; locks receiving hospital bed
+              </span>
+            </button>
+          </div>
+
+          <!-- Quick Caller Action Buttons -->
+          <div class="grid grid-cols-3 gap-2 pt-2">
+            <button id="callDriverBtn" class="al-btn bg-white text-[#13213A] py-2 px-2 rounded-xl text-xs font-bold flex flex-col items-center gap-1">
+              <span>📞</span>
+              <span>Call Driver</span>
+            </button>
+            <button id="callHospDeskBtn" class="al-btn bg-white text-[#13213A] py-2 px-2 rounded-xl text-xs font-bold flex flex-col items-center gap-1">
+              <span>🏥</span>
+              <span>Call Desk</span>
+            </button>
+            <button id="shareWhatsAppBtn" class="al-btn bg-[#E3F1E4] text-[#13213A] py-2 px-2 rounded-xl text-xs font-bold flex flex-col items-center gap-1">
+              <span>📲</span>
+              <span>Share Link</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Live Match Transparency & Real-Time Tracking -->
+      <div class="lg:col-span-7 space-y-5">
+        
+        <!-- Live Dispatch Status Card -->
+        <div class="al-card p-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 al-dotted-rule">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#317E33]">Active Live Dispatch</span>
+              <h2 class="font-display font-bold text-2xl text-[#13213A]">Matched Ambulance &amp; Receiving Hospital</h2>
+            </div>
+            <span id="callerDispatchBadge" class="px-3 py-1 rounded-xl bg-[#317E33] text-[#F4EEDF] text-xs font-bold">
+              AMBULANCE EN ROUTE (4 MINS)
+            </span>
+          </div>
+
+          <!-- Assigned Ambulance Details -->
+          <div class="p-4 rounded-xl bg-[#F4EEDF] border-2 border-[#13213A] mb-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-white border-2 border-[#13213A] shadow-[0_3px_0_#13213A] flex items-center justify-center text-2xl">
+                  🚑
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-display font-bold text-xl text-[#13213A]" id="ambPlate">BR-33-P-4821</span>
+                    <span class="al-badge bg-[#E3F1E4] text-[#317E33]" id="ambTierBadge">FASTEST DISPATCH</span>
+                  </div>
+                  <div class="text-xs text-[#4A586E] font-medium mt-0.5">
+                    Driver: <strong class="text-[#13213A]" id="ambDriver">Rajesh Kumar</strong> (+91 94310 88219)
+                  </div>
+                </div>
+              </div>
+              <div class="text-right sm:border-l-2 sm:border-[#13213A]/20 sm:pl-4">
+                <div class="text-xs font-bold text-[#4A586E] uppercase">Ambulance ETA</div>
+                <div class="font-mono-num font-bold text-2xl text-[#317E33]" id="ambEtaText">4 mins</div>
+                <div class="text-[11px] text-[#4A586E] font-medium" id="ambDistanceText">1.4 km from Kali Mandir</div>
+              </div>
+            </div>
+
+            <!-- Onboard Gear Badges -->
+            <div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-[#13213A]/20 text-xs">
+              <span class="font-bold text-[#13213A]">Onboard Gear:</span>
+              <span class="px-2.5 py-1 rounded-lg bg-[#E3F1E4] border border-[#13213A] text-[#13213A] font-semibold" id="gearOxygenPill">
+                ✅ Oxygen Cylinder (92%)
+              </span>
+              <span class="px-2.5 py-1 rounded-lg bg-[#E3F1E4] border border-[#13213A] text-[#13213A] font-semibold" id="gearMonitorPill">
+                ✅ Oximeter &amp; ECG
+              </span>
+              <span class="px-2.5 py-1 rounded-lg bg-[#FDF6E2] border border-[#13213A] text-[#13213A] font-semibold" id="gearSuctionPill">
+                ⚠️ Suction Pump Pre-Staged at Gate #1
+              </span>
+            </div>
+          </div>
+
+          <!-- "WHY THIS MATCH?" — First-Principles Algorithm Transparency (Spec Section 4) -->
+          <div class="p-4 rounded-xl bg-white border-2 border-[#13213A] mb-4 shadow-[0_3px_0_#13213A]">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-0.5 rounded bg-[#13213A] text-[#F4EEDF] text-xs font-bold font-display italic">
+                Why AarogyaLink Matched This Ambulance
+              </span>
+              <span class="text-xs text-[#4A586E]">Spec Section 4 Matching Rule</span>
+            </div>
+            <p class="text-xs sm:text-sm text-[#13213A] leading-relaxed" id="matchReasonText">
+              <strong>Rule 1 (Speed vs. Minor Gap):</strong> Vehicle BR-33-P-4821 is <strong>4 minutes away</strong> with onboard Oxygen (92%). The only vehicle with full suction was <strong>16 minutes away</strong>. In Bihar traffic, an ambulance 4 minutes away saves lives—AarogyaLink dispatched the faster van and automatically ordered hospital gate staff to meet you with suction.
+            </p>
+          </div>
+
+          <!-- MISSING-GEAR REASSURANCE BANNER -->
+          <div id="patientMissingGearBox" class="p-4 rounded-xl bg-[#FDF6E2] border-2 border-[#13213A] mb-4">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl" id="patientGearIcon">⚠️</span>
+              <div>
+                <div class="font-bold text-sm text-[#13213A]" id="patientGearHeadline">
+                  Fastest Ambulance Sent (Saves 12 Mins) — Hospital Gate Prep Activated
+                </div>
+                <p class="text-xs text-[#13213A]/90 mt-1 leading-normal" id="patientGearBody">
+                  This ambulance carries <strong>Oxygen Cylinder (92% Full) + Pulse Oximeter</strong>. To protect the patient without delay, AarogyaLink has already alerted <strong>Sadar District Hospital Emergency Gate #1</strong> to wheel a portable suction pump &amp; ventilator trolley to the entrance before arrival.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Confirmed Hospital Reception Desk Card (Spec Section 5) -->
+          <div class="p-4 rounded-xl bg-[#E3F1E4] border-2 border-[#13213A]">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-lg">🏥</span>
+                  <span class="font-display font-bold text-lg text-[#13213A]" id="hospName">
+                    Sadar District Hospital — Trauma &amp; Oxygen Wing
+                  </span>
+                </div>
+                <div class="text-xs text-[#13213A]/80 font-medium mt-1">
+                  Reception Desk #1 (Sunita Roy) · <strong class="text-[#317E33]" id="hospBedConfirmedText">ICU Bed #4 Locked &amp; Waiting</strong>
+                </div>
+              </div>
+              <div class="shrink-0">
+                <span class="al-pill-banner px-3 py-1 text-xs not-italic font-sans font-bold">
+                  ✓ LOCKED BY DESK
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Compare Nearby Hospitals Drawer Toggle -->
+        <div class="al-card p-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">🏥</span>
+              <div>
+                <div class="font-bold text-sm text-[#13213A]">Compare Other Nearby Hospitals in Samastipur</div>
+                <div class="text-xs text-[#4A586E]">See bed capacity, distance &amp; specialties across the pilot network</div>
+              </div>
+            </div>
+            <button id="toggleCompareBtn" class="al-btn bg-white text-[#13213A] text-xs font-bold px-3 py-1.5 rounded-lg">
+              ▼ View 3 Hospitals
+            </button>
+          </div>
+
+          <!-- Drawer Table (Hidden by default) -->
+          <div id="compareDrawer" class="hidden mt-4 pt-4 border-t-2 border-[#13213A]/20">
+            <div class="al-table-wrap">
+              <table class="al-table">
+                <thead>
+                  <tr>
+                    <th>Hospital Name</th>
+                    <th>Distance &amp; ETA</th>
+                    <th>ICU &amp; O₂ Beds</th>
+                    <th>Specialty</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="bg-[#E3F1E4]/50">
+                    <td class="font-bold">Sadar District Hospital (Active Lock)</td>
+                    <td>2.6 km · 7 mins</td>
+                    <td><strong class="text-[#317E33]">4 ICU / 9 O₂ Open</strong></td>
+                    <td>Trauma, Cardiac, Oxygen</td>
+                    <td><span class="text-xs font-bold text-[#317E33]">✓ Current Choice</span></td>
+                  </tr>
+                  <tr>
+                    <td class="font-bold">RPCAU Community Health Centre</td>
+                    <td>4.8 km · 12 mins</td>
+                    <td>2 ICU / 4 O₂ Open</td>
+                    <td>General, Maternity</td>
+                    <td><button class="al-btn bg-white text-xs px-2 py-1 rounded" onclick="AarogyaLink.showToast('ℹ️', 'Standby Candidate', 'RPCAU CHC is held in standby pool.')">Standby</button></td>
+                  </tr>
+                  <tr>
+                    <td class="font-bold">Tajpur Referral Hospital</td>
+                    <td>7.2 km · 18 mins</td>
+                    <td>1 ICU / 6 O₂ Open</td>
+                    <td>Pediatric, General</td>
+                    <td><button class="al-btn bg-white text-xs px-2 py-1 rounded" onclick="AarogyaLink.showToast('ℹ️', 'Standby Candidate', 'Tajpur Hospital is registered in pool.')">Standby</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 max-w-md hidden"></div>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#317E33] border-t-2 border-[#13213A] text-[#F4EEDF] px-4 sm:px-6 py-3 mt-8">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="font-display font-bold text-base">AarogyaLink · TheWhales India</span>
+        <span>·</span>
+        <span>Portal 1: Patient &amp; Family Emergency Caller App</span>
+      </div>
+      <div class="font-medium">
+        Always 100% Free for Patients · Pure First-Principles Emergency Care Dispatch
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT -->
+  <script src="js/shared-state.js"></script>
+  <script>
+    (function() {
+      // Subscribe to global AarogyaLink shared state
+      AarogyaLink.subscribe((state, eventType) => {
+        updatePatientUI(state);
+      });
+
+      function updatePatientUI(state) {
+        // Step buttons active state
+        document.querySelectorAll('.step-btn').forEach(btn => {
+          const s = btn.getAttribute('data-step');
+          if (s === state.demoStep) {
+            btn.className = 'step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-[#317E33] text-[#F4EEDF]';
+          } else {
+            btn.className = 'step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]';
+          }
+        });
+
+        // Landmark
+        const landmarkSelect = document.getElementById('landmarkSelect');
+        if (landmarkSelect.value !== state.caller.landmark) {
+          landmarkSelect.value = state.caller.landmark;
+        }
+
+        // Case ID
+        document.getElementById('patientCaseId').textContent = 'Case ' + state.caseId;
+
+        // Network badge
+        const netBadge = document.getElementById('patientNetBadge');
+        const netDot = document.getElementById('netDot');
+        const netText = document.getElementById('netText');
+        if (state.networkOnline) {
+          netBadge.textContent = '🟢 4G Live';
+          netBadge.className = 'px-2 py-0.5 rounded bg-white border border-[#13213A]';
+          netDot.textContent = '🟢';
+          netText.textContent = '4G Live';
+        } else {
+          netBadge.textContent = '🟡 2G SMS Backup';
+          netBadge.className = 'px-2 py-0.5 rounded bg-[#FDF6E2] border border-[#13213A]';
+          netDot.textContent = '🟡';
+          netText.textContent = '2G SMS';
+        }
+
+        // SOS Button & Badges
+        const sosTitle = document.getElementById('sosTitle');
+        const sosSubtitle = document.getElementById('sosSubtitle');
+        const dispatchBadge = document.getElementById('callerDispatchBadge');
+        const ambPlate = document.getElementById('ambPlate');
+        const ambDriver = document.getElementById('ambDriver');
+        const ambEtaText = document.getElementById('ambEtaText');
+        const hospName = document.getElementById('hospName');
+        const hospBedText = document.getElementById('hospBedConfirmedText');
+
+        ambPlate.textContent = state.ambulance.id;
+        ambDriver.textContent = state.ambulance.driverName;
+        ambEtaText.textContent = state.ambulance.etaToPatient + ' mins';
+        hospName.textContent = state.hospital.name;
+
+        if (state.langHindi) {
+          document.getElementById('langLabel').textContent = 'हिन्दी (Active)';
+          document.getElementById('labelLandmark').textContent = '📍 मरीज़ का स्थान (समस्तीपुर)';
+          document.getElementById('labelEmergencyNeed').textContent = '१. मरीज़ को क्या ज़रूरत है? (१-टैप)';
+        } else {
+          document.getElementById('langLabel').textContent = 'EN / हिन्दी';
+          document.getElementById('labelLandmark').textContent = '📍 Pickup Landmark (Samastipur)';
+          document.getElementById('labelEmergencyNeed').textContent = '1. What does the patient need? (1-Tap)';
+        }
+
+        if (state.demoStep === 'idle') {
+          sosTitle.textContent = state.langHindi ? 'आपातकालीन एम्बुलेंस बुलाएं (SOS)' : 'TAP FOR EMERGENCY AMBULANCE';
+          sosSubtitle.textContent = state.langHindi ? 'एक टैप से निकटतम ऑक्सीजन एम्बुलेंस व अस्पताल बेड पक्का होगा' : 'One tap matches nearest oxygen ambulance & locks receiving hospital bed';
+          dispatchBadge.textContent = 'STANDBY · READY TO DISPATCH';
+          dispatchBadge.className = 'px-3 py-1 rounded-xl bg-[#E6DEC8] text-[#13213A] text-xs font-bold';
+          hospBedText.textContent = 'Awaiting SOS Dispatch';
+        } else if (state.demoStep === 'dispatched') {
+          sosTitle.textContent = state.langHindi ? 'एम्बुलेंस रवाना हो रही है...' : 'AMBULANCE ASSIGNED · PINGING DESK';
+          sosSubtitle.textContent = `Ambulance ${state.ambulance.id} (${state.ambulance.driverName}) assigned · Awaiting hospital desk tap`;
+          dispatchBadge.textContent = 'AMBULANCE ASSIGNED (4 MINS)';
+          dispatchBadge.className = 'px-3 py-1 rounded-xl bg-[#E5B842] text-[#13213A] text-xs font-bold';
+          hospBedText.textContent = 'Pinging Front Desk Now...';
+        } else if (state.demoStep === 'confirmed') {
+          sosTitle.textContent = state.langHindi ? 'एम्बुलेंस रास्ते में है · बेड बुक हो गया ✓' : 'AMBULANCE EN ROUTE · BED #4 LOCKED ✓';
+          sosSubtitle.textContent = `${state.ambulance.driverName} (4 mins away) · Sadar Hospital Gate #1 confirmed`;
+          dispatchBadge.textContent = 'AMBULANCE EN ROUTE (4 MINS)';
+          dispatchBadge.className = 'px-3 py-1 rounded-xl bg-[#317E33] text-[#F4EEDF] text-xs font-bold';
+          hospBedText.textContent = `${state.hospital.lockedBed} Locked & Waiting`;
+        } else if (state.demoStep === 'reroute') {
+          sosTitle.textContent = 'BETTER HOSPITAL FOUND AHEAD (NO U-TURN)';
+          sosSubtitle.textContent = 'Trauma Center confirmed 28° forward on route · Saves 8 mins';
+          dispatchBadge.textContent = 'STANDBY UPGRADE ACTIVE';
+          dispatchBadge.className = 'px-3 py-1 rounded-xl bg-[#317E33] text-[#F4EEDF] text-xs font-bold';
+        } else if (state.demoStep === 'arrived') {
+          sosTitle.textContent = 'ARRIVED AT HOSPITAL GATE #1 ✓';
+          sosSubtitle.textContent = 'Oxygen trolley & medical team met ambulance at entrance';
+          dispatchBadge.textContent = 'HANDOVER COMPLETE AT GATE #1';
+          dispatchBadge.className = 'px-3 py-1 rounded-xl bg-[#13213A] text-[#F4EEDF] text-xs font-bold';
+          hospBedText.textContent = 'Patient Admitted to Bed';
+        }
+
+        // Equipment Missing Reassurance
+        const hasSuction = state.ambulance.gear.suction.ready;
+        const missingBox = document.getElementById('patientMissingGearBox');
+        const gearSuctionPill = document.getElementById('gearSuctionPill');
+        if (hasSuction) {
+          missingBox.className = 'p-4 rounded-xl bg-[#E3F1E4] border-2 border-[#13213A] mb-4';
+          document.getElementById('patientGearIcon').textContent = '✅';
+          document.getElementById('patientGearHeadline').textContent = '100% Onboard Equipment Fit';
+          document.getElementById('patientGearBody').textContent = 'Ambulance BR-33-P-4821 carries all requested equipment onboard: Oxygen Cylinder, Suction Pump, Oximeter, and Stretcher.';
+          gearSuctionPill.className = 'px-2.5 py-1 rounded-lg bg-[#E3F1E4] border border-[#13213A] text-[#13213A] font-semibold';
+          gearSuctionPill.textContent = '✅ Suction Pump Onboard';
+        } else {
+          missingBox.className = 'p-4 rounded-xl bg-[#FDF6E2] border-2 border-[#13213A] mb-4';
+          document.getElementById('patientGearIcon').textContent = '⚠️';
+          document.getElementById('patientGearHeadline').textContent = 'Fastest Ambulance Sent (Saves 12 Mins) — Hospital Gate Prep Activated';
+          document.getElementById('patientGearBody').textContent = 'This ambulance carries Oxygen Cylinder (92% Full) + Pulse Oximeter. To protect the patient without delay, AarogyaLink has already alerted Sadar District Hospital Emergency Gate #1 to wheel a portable suction pump & ventilator trolley to the entrance before arrival.';
+          gearSuctionPill.className = 'px-2.5 py-1 rounded-lg bg-[#FDF6E2] border border-[#13213A] text-[#13213A] font-semibold';
+          gearSuctionPill.textContent = '⚠️ Suction Pump Pre-Staged at Gate #1';
+        }
+
+        // Active symptom button
+        document.querySelectorAll('.symptom-chip').forEach(btn => {
+          const sym = btn.getAttribute('data-symptom');
+          if (sym === state.caller.symptom) {
+            btn.className = 'symptom-chip al-btn px-3 py-2 rounded-xl text-left text-xs font-bold bg-[#13213A] text-[#F4EEDF] flex items-center gap-2';
+          } else {
+            btn.className = 'symptom-chip al-btn px-3 py-2 rounded-xl text-left text-xs font-bold bg-white text-[#13213A] flex items-center gap-2';
+          }
+        });
+      }
+
+      // Event Listeners
+      document.getElementById('mainSosBtn').addEventListener('click', () => {
+        const state = AarogyaLink.getState();
+        if (state.demoStep === 'idle') {
+          AarogyaLink.triggerSos();
+        } else {
+          AarogyaLink.confirmBed();
+        }
+      });
+
+      document.querySelectorAll('.step-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          AarogyaLink.setDemoStep(btn.getAttribute('data-step'));
+        });
+      });
+
+      document.querySelectorAll('.symptom-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          AarogyaLink.setSymptom(btn.getAttribute('data-symptom'));
+        });
+      });
+
+      document.getElementById('landmarkSelect').addEventListener('change', (e) => {
+        const state = AarogyaLink.getState();
+        state.caller.landmark = e.target.value;
+        AarogyaLink.showToast('📍', 'Pickup Landmark Set', e.target.value);
+      });
+
+      document.getElementById('recordVoiceBtn').addEventListener('click', function() {
+        const txt = document.getElementById('voiceBtnText');
+        txt.textContent = '🔴 Recording 5s...';
+        setTimeout(() => {
+          txt.textContent = '✓ Voice Note Attached ("Near Kali Mandir")';
+          AarogyaLink.showToast('🎙️', 'Voice Landmark Attached', '5s voice landmark attached to dispatch for driver Rajesh Kumar.');
+        }, 800);
+      });
+
+      document.getElementById('offlineSmsBtn').addEventListener('click', () => {
+        AarogyaLink.showToast('📲', 'Offline 2G SMS SOS Dispatched', 'Compressed 140-byte SOS packet routed through Samastipur GSM gateway.');
+      });
+
+      document.getElementById('callDriverBtn').addEventListener('click', () => {
+        AarogyaLink.showToast('📞', 'Calling Driver Rajesh Kumar...', 'Connecting to BR-33-P-4821 (+91 94310 88219) · 4 mins away.');
+      });
+
+      document.getElementById('callHospDeskBtn').addEventListener('click', () => {
+        AarogyaLink.showToast('🏥', 'Calling Sadar Hospital Desk...', 'Connecting to Reception Clerk Sunita Roy · ICU Bed #4 is locked for you.');
+      });
+
+      document.getElementById('shareWhatsAppBtn').addEventListener('click', () => {
+        AarogyaLink.showToast('📲', 'Live Link Shared', 'WhatsApp live ambulance tracking and gate receipt link copied.');
+      });
+
+      document.getElementById('toggleCompareBtn').addEventListener('click', () => {
+        const drawer = document.getElementById('compareDrawer');
+        drawer.classList.toggle('hidden');
+      });
+
+      document.getElementById('toggleLangBtn').addEventListener('click', () => {
+        AarogyaLink.toggleLanguage();
+      });
+
+      document.getElementById('toggleAudioBtn').addEventListener('click', () => {
+        const enabled = AarogyaLink.toggleSound();
+        document.getElementById('audioLabel').textContent = enabled ? 'Sound' : 'Muted';
+      });
+
+      document.getElementById('toggleNetworkBtn').addEventListener('click', () => {
+        AarogyaLink.toggleNetwork();
+      });
+
+      document.getElementById('resetDemoBtn').addEventListener('click', () => {
+        AarogyaLink.resetAll();
+      });
+
+    })();
+  </script>
+</body>
+</html>

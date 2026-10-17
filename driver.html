@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AarogyaLink — Ambulance Driver Tablet &amp; Smartphone Interface</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- TOP SHARED NAV BAR -->
+  <header class="sticky top-0 z-40 bg-[#F4EEDF]/95 backdrop-blur border-b-2 border-[#13213A] px-3 sm:px-6 py-2.5">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand Logo & Identity -->
+      <a href="index.html" class="flex items-center gap-3 text-decoration-none text-inherit">
+        <div class="w-10 h-10 rounded-xl bg-[#317E33] border-2 border-[#13213A] shadow-[0_3px_0_#13213A] flex items-center justify-center text-[#F4EEDF] font-display font-bold text-xl">
+          ✚
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-display font-bold text-xl sm:text-2xl tracking-tight text-[#13213A] leading-none">AarogyaLink</span>
+            <span class="al-pill-banner text-xs px-2 py-0.5 not-italic font-sans font-semibold">Bihar Pilot</span>
+          </div>
+          <p class="text-xs text-[#4A586E] font-medium hidden sm:block">Samastipur District Emergency Medical Network</p>
+        </div>
+      </a>
+
+      <!-- Role-Based Navigation Switcher -->
+      <nav class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+        <a href="patient.html" class="al-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-white text-[#13213A]">
+          <span>📱</span> <span>Patient App</span>
+        </a>
+        <a href="driver.html" class="al-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 nav-link-active">
+          <span>🚑</span> <span>Ambulance</span>
+        </a>
+        <a href="hospital.html" class="al-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-white text-[#13213A]">
+          <span>🏥</span> <span>Hospital Desk</span>
+        </a>
+        <a href="controller.html" class="al-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-white text-[#13213A]">
+          <span>🛡️</span> <span>EMS Admin</span>
+        </a>
+        <a href="index.html" class="al-btn px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1 bg-[#E6DEC8] text-[#13213A]">
+          <span>⚡</span> <span>Hub / Quad</span>
+        </a>
+      </nav>
+
+      <!-- Global Controls -->
+      <div class="flex items-center gap-1.5">
+        <button id="toggleLangBtn" class="al-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-[#13213A]">
+          🌐 <span id="langLabel">EN / हिन्दी</span>
+        </button>
+        <button id="toggleAudioBtn" class="al-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-[#13213A]">
+          🔊 <span id="audioLabel">Sound</span>
+        </button>
+        <button id="resetDemoBtn" class="al-btn px-2 py-1 rounded-lg text-xs font-bold bg-[#E6DEC8] text-[#13213A]">
+          ↺ Reset
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- QUICK DEMO STEPPER BAR -->
+  <aside class="bg-[#E6DEC8] border-b-2 border-[#13213A] px-3 sm:px-6 py-2">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-[#13213A] uppercase tracking-wider flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#317E33] inline-block radar-ping"></span>
+          Driver Simulation Stage:
+        </span>
+        <div class="flex items-center gap-1">
+          <button data-step="idle" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">0. Idle</button>
+          <button data-step="dispatched" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">1. SOS</button>
+          <button data-step="confirmed" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-[#317E33] text-[#F4EEDF]">2. Confirmed</button>
+          <button data-step="reroute" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">3. Reroute</button>
+          <button data-step="arrived" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">4. Arrived</button>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-[#4A586E] font-medium hidden md:inline">Open <a href="patient.html" target="_blank" class="font-bold underline text-[#13213A]">Patient App</a> in another tab to trigger live SOS!</span>
+        <span class="px-2 py-0.5 rounded bg-white border border-[#13213A] font-bold" id="netStatusBadge">🟢 4G Connected</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN DRIVER WORKSPACE -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-6">
+
+    <!-- Header Section -->
+    <div class="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div>
+        <div class="inline-block al-pill-banner px-4 py-1 text-sm sm:text-base mb-1">
+          Portal 2 · Ambulance Driver Tablet / Phone Interface
+        </div>
+        <h1 class="font-display font-bold text-2xl sm:text-4xl text-[#13213A] tracking-tight">
+          Shift Gear Check, Turn-by-Turn HUD &amp; No-U-Turn Standby Reroute
+        </h1>
+        <p class="text-sm text-[#4A586E] mt-1 font-medium">
+          Optimized for in-cab dashboard mount: high-contrast tactile milestones, live telemetry relay, and forward-heading hospital recalculation.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 bg-[#13213A] text-[#F4EEDF] border-2 border-[#13213A] rounded-xl px-3 py-2 shadow-[0_3px_0_#13213A]">
+        <span class="text-xl">🚑</span>
+        <div class="text-xs">
+          <div class="font-bold text-[#E5B842]">Vehicle BR-33-P-4821</div>
+          <div class="text-[#F4EEDF]/80">Driver: Rajesh Kumar · Samastipur Central Zone</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- LEFT COLUMN: Gear Checklist + Trip Milestones + Standby Rerouting HUD -->
+      <div class="lg:col-span-6 space-y-5">
+        
+        <!-- START-OF-SHIFT 30-SECOND EQUIPMENT CHECKLIST -->
+        <div class="al-card p-5">
+          <div class="flex items-center justify-between pb-3 mb-3 al-dotted-rule">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#317E33]">Start-of-Shift Checklist (30 Seconds)</span>
+              <h2 class="font-display font-bold text-xl text-[#13213A]">Onboard Equipment Readiness</h2>
+            </div>
+            <span class="text-xs font-mono-num font-bold px-2 py-0.5 rounded bg-[#E6DEC8] border border-[#13213A]">
+              1-Tap to Toggle
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <!-- Oxygen Cylinder -->
+            <button data-gear="oxygen" class="gear-toggle-btn al-btn p-3 rounded-xl bg-[#E3F1E4] text-[#13213A] text-left flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-2xl">🫁</span>
+                <span id="badge-oxygen" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#317E33] text-white">READY</span>
+              </div>
+              <div>
+                <div class="font-bold text-xs mt-2">Oxygen Tank</div>
+                <div class="text-[10px] text-[#4A586E] font-mono-num" id="sub-oxygen">92% Pressure</div>
+              </div>
+            </button>
+
+            <!-- Suction Pump (Missing Gear Trigger) -->
+            <button data-gear="suction" class="gear-toggle-btn al-btn p-3 rounded-xl bg-[#FDF6E2] text-[#13213A] text-left flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-2xl">🔌</span>
+                <span id="badge-suction" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#E5B842] text-[#13213A]">MISSING</span>
+              </div>
+              <div>
+                <div class="font-bold text-xs mt-2">Suction Pump</div>
+                <div class="text-[10px] text-[#4A586E]" id="sub-suction">Gate Alerted</div>
+              </div>
+            </button>
+
+            <!-- Oximeter / ECG -->
+            <button data-gear="monitor" class="gear-toggle-btn al-btn p-3 rounded-xl bg-[#E3F1E4] text-[#13213A] text-left flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-2xl">📟</span>
+                <span id="badge-monitor" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#317E33] text-white">READY</span>
+              </div>
+              <div>
+                <div class="font-bold text-xs mt-2">Oximeter / ECG</div>
+                <div class="text-[10px] text-[#4A586E]" id="sub-monitor">Battery 100%</div>
+              </div>
+            </button>
+
+            <!-- Stretcher -->
+            <button data-gear="stretcher" class="gear-toggle-btn al-btn p-3 rounded-xl bg-[#E3F1E4] text-[#13213A] text-left flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-2xl">🩼</span>
+                <span id="badge-stretcher" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#317E33] text-white">READY</span>
+              </div>
+              <div>
+                <div class="font-bold text-xs mt-2">Spine Stretcher</div>
+                <div class="text-[10px] text-[#4A586E]" id="sub-stretcher">Locked In-Cab</div>
+              </div>
+            </button>
+          </div>
+          <p class="text-[11px] text-[#4A586E] mt-3">
+            *Toggling equipment immediately synchronizes with the Hospital Desk so missing gear can be wheeled to Gate #1 before arrival.
+          </p>
+        </div>
+
+        <!-- 1-TAP TRIP MILESTONES -->
+        <div class="al-card p-5">
+          <div class="flex items-center justify-between pb-3 mb-3 al-dotted-rule">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#4A586E]">Active Dispatch #SOS-8492</span>
+              <h2 class="font-display font-bold text-xl text-[#13213A]">Trip Progress Milestones</h2>
+            </div>
+            <span id="driverStageBadge" class="px-2.5 py-1 rounded-lg bg-[#317E33] text-[#F4EEDF] text-xs font-bold">
+              EN ROUTE TO HOSPITAL
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+            <button data-stage="Accepted SOS" class="driver-milestone-btn al-btn py-2.5 px-2 rounded-xl text-xs font-bold bg-[#E3F1E4] text-[#13213A]">
+              1. Accepted SOS
+            </button>
+            <button data-stage="En Route to Patient" class="driver-milestone-btn al-btn py-2.5 px-2 rounded-xl text-xs font-bold bg-white text-[#13213A]">
+              2. To Pickup
+            </button>
+            <button data-stage="En Route to Hospital" class="driver-milestone-btn al-btn py-2.5 px-2 rounded-xl text-xs font-bold bg-[#13213A] text-[#F4EEDF]">
+              3. To Hospital
+            </button>
+            <button data-stage="Handover Complete ✓" class="driver-milestone-btn al-btn py-2.5 px-2 rounded-xl text-xs font-bold bg-white text-[#13213A]">
+              4. At Gate #1
+            </button>
+          </div>
+          <div class="text-[11px] text-[#4A586E]">
+            Each tap instantly informs the caller and signals the receiving hospital emergency triage team.
+          </div>
+        </div>
+
+        <!-- STANDBY REROUTING HUD (Addendum 9 & v1.1 - The <45° Heading Guard) -->
+        <div class="al-card p-5 border-4 border-[#13213A]">
+          <div class="flex items-center justify-between pb-3 mb-3 al-dotted-rule">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#317E33]">v1.1 Live Re-Evaluation Engine (Addendum 9)</span>
+              <h2 class="font-display font-bold text-xl text-[#13213A]">Standby Hospital Reroute HUD</h2>
+            </div>
+            <div class="flex items-center gap-1">
+              <button data-tier="green" class="reroute-tier-selector al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-[#13213A] text-white">Green</button>
+              <button data-tier="yellow" class="reroute-tier-selector al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">Yellow</button>
+              <button data-tier="red" class="reroute-tier-selector al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">Red</button>
+            </div>
+          </div>
+
+          <div id="rerouteCardBox" class="p-4 rounded-xl bg-[#E3F1E4] border-2 border-[#13213A] mb-3">
+            <div class="flex items-center justify-between mb-2">
+              <span id="rerouteTierTag" class="text-xs font-bold uppercase px-2 py-0.5 rounded bg-[#317E33] text-white">
+                🟢 GREEN TIER · VOICE ALERT · NO U-TURN (28° AHEAD)
+              </span>
+              <span id="rerouteTimeSaved" class="font-mono-num font-bold text-xs text-[#317E33]">
+                Saves 8 Mins + Full ICU
+              </span>
+            </div>
+            <p id="rerouteDesc" class="text-xs sm:text-sm text-[#13213A] leading-relaxed">
+              <strong>Sadar District Trauma Center</strong> just confirmed an open ICU Bed + Oxygen Team at Gate #1. It lies <strong>28° ahead on Station Road</strong> (zero U-turn needed) and saves 8 minutes over your initial destination.
+            </p>
+
+            <div class="flex items-center gap-2.5 mt-3 pt-3 border-t border-[#13213A]/20">
+              <button id="driverAcceptRerouteBtn" class="flex-1 al-btn bg-[#317E33] text-[#F4EEDF] py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-[0_3px_0_#13213A]">
+                <span>✓</span> <span>Accept Reroute Ahead</span>
+              </button>
+              <button id="driverIgnoreRerouteBtn" class="al-btn bg-white text-[#13213A] py-2 px-3 rounded-xl text-xs font-bold">
+                Stay on Current Route
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-[#F4EEDF] p-3 rounded-xl border border-[#13213A] text-xs">
+            <span class="font-bold text-[#13213A]">The &lt;45° Heading Guard Rule:</span>
+            <p class="text-[#4A586E] mt-0.5">
+              Spec section 9.2: Late-approving standby hospitals are ONLY presented if forward heading delta is &lt;45°. Dangerous U-turns in Samastipur market traffic (&gt;90°) are strictly filtered out automatically.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Active Dispatch HUD + Live Turn-by-Turn Map + Patient Vitals Relay -->
+      <div class="lg:col-span-6 space-y-5">
+        
+        <!-- TURN-BY-TURN HUD & LIVE MAP -->
+        <div class="al-card p-5">
+          <div class="flex items-center justify-between pb-3 mb-3 al-dotted-rule">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#317E33]">Turn-by-Turn In-Cab Navigation</span>
+              <h2 class="font-display font-bold text-xl text-[#13213A]" id="navDestinationTitle">En Route to Sadar District Hospital Gate #1</h2>
+            </div>
+            <span class="font-mono-num font-bold text-xl text-[#317E33]" id="navEtaText">7 mins</span>
+          </div>
+
+          <!-- Active Road Instruction Banner -->
+          <div class="bg-[#13213A] text-[#F4EEDF] p-3.5 rounded-xl border-2 border-[#13213A] mb-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl text-[#E5B842]">⮞</span>
+              <div>
+                <div class="text-xs uppercase text-[#E5B842] font-bold">Next Maneuver in 350m</div>
+                <div class="font-display font-bold text-base sm:text-lg">Turn Right onto Station Road Overbridge</div>
+              </div>
+            </div>
+            <div class="text-right font-mono-num font-bold text-xs text-[#E5B842]">
+              2.6 km Total
+            </div>
+          </div>
+
+          <!-- Interactive SVG Live Map -->
+          <div class="relative bg-[#E6DEC8] border-2 border-[#13213A] rounded-xl p-3 h-64 overflow-hidden flex items-center justify-center shadow-inner">
+            <svg class="w-full h-full" viewBox="0 0 500 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Grid Roads -->
+              <line x1="20" y1="120" x2="480" y2="120" stroke="#13213A" stroke-width="4" stroke-linecap="round"/>
+              <line x1="180" y1="20" x2="180" y2="220" stroke="#13213A" stroke-width="3" stroke-linecap="round"/>
+              <line x1="360" y1="20" x2="360" y2="220" stroke="#13213A" stroke-width="3" stroke-linecap="round"/>
+              <line x1="20" y1="60" x2="480" y2="60" stroke="#13213A" stroke-width="1.5" stroke-dasharray="4 4"/>
+              <line x1="20" y1="180" x2="480" y2="180" stroke="#13213A" stroke-width="1.5" stroke-dasharray="4 4"/>
+              
+              <!-- Active Route Path Animated -->
+              <path d="M 60 120 L 180 120 L 180 60 L 420 60" stroke="#317E33" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" class="route-line-animated"/>
+              
+              <!-- Patient Pin -->
+              <g transform="translate(50, 105)">
+                <circle cx="10" cy="15" r="14" fill="#D63B2F" stroke="#13213A" stroke-width="2"/>
+                <text x="10" y="20" text-anchor="middle" font-size="12" fill="#FFFFFF" font-weight="bold">📍</text>
+                <rect x="-30" y="-18" width="80" height="18" rx="4" fill="#13213A"/>
+                <text x="10" y="-5" text-anchor="middle" font-size="9" fill="#F4EEDF" font-weight="bold">Kali Mandir</text>
+              </g>
+
+              <!-- Ambulance Vehicle Pin -->
+              <g transform="translate(165, 95)">
+                <circle cx="15" cy="15" r="18" fill="#FFFFFF" stroke="#13213A" stroke-width="2"/>
+                <text x="15" y="21" text-anchor="middle" font-size="16">🚑</text>
+                <rect x="-25" y="-18" width="80" height="18" rx="4" fill="#317E33"/>
+                <text x="15" y="-5" text-anchor="middle" font-size="9" fill="#FFFFFF" font-weight="bold">BR-33 (You)</text>
+              </g>
+
+              <!-- Primary Hospital Pin -->
+              <g transform="translate(405, 45)">
+                <circle cx="15" cy="15" r="18" fill="#317E33" stroke="#13213A" stroke-width="2"/>
+                <text x="15" y="22" text-anchor="middle" font-size="16" fill="#FFFFFF">🏥</text>
+                <rect x="-40" y="-18" width="110" height="18" rx="4" fill="#13213A"/>
+                <text x="15" y="-5" text-anchor="middle" font-size="9" fill="#F4EEDF" font-weight="bold">Sadar Hospital #1</text>
+              </g>
+
+              <!-- Standby Alternate Hospital (28° forward ahead) -->
+              <g transform="translate(350, 165)">
+                <circle cx="12" cy="12" r="14" fill="#E5B842" stroke="#13213A" stroke-width="2"/>
+                <text x="12" y="17" text-anchor="middle" font-size="12">🏥</text>
+                <rect x="-45" y="30" width="115" height="16" rx="4" fill="#E5B842"/>
+                <text x="12" y="42" text-anchor="middle" font-size="8" fill="#13213A" font-weight="bold">Trauma Ctr (Standby)</text>
+              </g>
+            </svg>
+            <div class="absolute bottom-2 left-2 bg-white/90 border border-[#13213A] rounded px-2 py-0.5 text-[10px] font-bold font-mono-num">
+              GPS Speed: 42 km/h · Forward Heading: 28° NE
+            </div>
+          </div>
+
+          <!-- Pickup Caller Information & Voice Note -->
+          <div class="mt-4 p-3.5 rounded-xl bg-[#F4EEDF] border-2 border-[#13213A]">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-[#4A586E] uppercase">Caller Contact &amp; Voice Landmark</span>
+                <div class="font-bold text-sm text-[#13213A] mt-0.5">Ramesh Sharma · Near Kali Mandir, Ward 4</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button id="playVoiceNoteBtn" class="al-btn bg-[#317E33] text-[#F4EEDF] text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1">
+                  <span>▶</span> <span>Play 5s Audio Note</span>
+                </button>
+                <button id="callCallerBtn" class="al-btn bg-white text-[#13213A] text-xs font-bold px-2.5 py-1.5 rounded-lg">
+                  📞 Call
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PATIENT VITALS TELEMETRY RELAY (Relayed to Hospital Desk) -->
+        <div class="al-card p-5">
+          <div class="flex items-center justify-between pb-3 mb-3 al-dotted-rule">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#317E33]">In-Cab Telemetry Reporter</span>
+              <h2 class="font-display font-bold text-xl text-[#13213A]">Relay Patient Vitals to Hospital Desk</h2>
+            </div>
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-[#E3F1E4] text-[#317E33]">
+              Live Desk Sync
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4">
+            <div class="p-2.5 rounded-xl bg-[#F4EEDF] border border-[#13213A]">
+              <div class="text-[10px] text-[#4A586E] uppercase font-bold">SpO₂ Level</div>
+              <div class="font-mono-num font-bold text-lg text-[#D63B2F]" id="vitalsSpO2">89% (Low)</div>
+              <div class="text-[10px] text-[#4A586E]">O₂ mask on</div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-[#F4EEDF] border border-[#13213A]">
+              <div class="text-[10px] text-[#4A586E] uppercase font-bold">Pulse / HR</div>
+              <div class="font-mono-num font-bold text-lg text-[#13213A]" id="vitalsPulse">104 bpm</div>
+              <div class="text-[10px] text-[#4A586E]">Tachycardia</div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-[#F4EEDF] border border-[#13213A]">
+              <div class="text-[10px] text-[#4A586E] uppercase font-bold">Blood Pressure</div>
+              <div class="font-mono-num font-bold text-lg text-[#13213A]" id="vitalsBP">135 / 88</div>
+              <div class="text-[10px] text-[#4A586E]">Stable</div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-[#F4EEDF] border border-[#13213A]">
+              <div class="text-[10px] text-[#4A586E] uppercase font-bold">Respiration</div>
+              <div class="font-mono-num font-bold text-lg text-[#13213A]" id="vitalsResp">28 / min</div>
+              <div class="text-[10px] text-[#4A586E]">Rapid breathing</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button id="sendVitalsUpdateBtn" class="flex-1 al-btn bg-[#13213A] text-[#F4EEDF] py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5">
+              <span>📡</span> <span>Transmit Vitals Update to Sadar Desk</span>
+            </button>
+            <button id="sendSmsPingBtn" class="al-btn bg-white text-[#13213A] py-2 px-3 rounded-xl text-xs font-bold" title="Offline 2G SMS Ping">
+              📲 SMS Ping
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 max-w-md hidden"></div>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#317E33] border-t-2 border-[#13213A] text-[#F4EEDF] px-4 sm:px-6 py-3 mt-8">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="font-display font-bold text-base">AarogyaLink · TheWhales India</span>
+        <span>·</span>
+        <span>Portal 2: Ambulance Driver Tablet &amp; Smartphone Interface</span>
+      </div>
+      <div class="font-medium">
+        Vehicle BR-33-P-4821 · Active Shift
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT -->
+  <script src="js/shared-state.js"></script>
+  <script>
+    (function() {
+      AarogyaLink.subscribe((state, eventType) => {
+        updateDriverUI(state);
+      });
+
+      function updateDriverUI(state) {
+        // Step buttons
+        document.querySelectorAll('.step-btn').forEach(btn => {
+          const s = btn.getAttribute('data-step');
+          if (s === state.demoStep) {
+            btn.className = 'step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-[#317E33] text-[#F4EEDF]';
+          } else {
+            btn.className = 'step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]';
+          }
+        });
+
+        // Stage badge & Milestone buttons
+        const stageBadge = document.getElementById('driverStageBadge');
+        stageBadge.textContent = state.ambulance.driverStage.toUpperCase();
+
+        document.querySelectorAll('.driver-milestone-btn').forEach(btn => {
+          const stg = btn.getAttribute('data-stage');
+          if (stg.toLowerCase() === state.ambulance.driverStage.toLowerCase()) {
+            btn.className = 'driver-milestone-btn al-btn py-2.5 px-2 rounded-xl text-xs font-bold bg-[#13213A] text-[#F4EEDF]';
+          } else {
+            btn.className = 'driver-milestone-btn al-btn py-2.5 px-2 rounded-xl text-xs font-bold bg-white text-[#13213A]';
+          }
+        });
+
+        // Equipment Badges
+        const gear = state.ambulance.gear;
+        updateGearButton('oxygen', gear.oxygen.ready, 'READY', 'CHECK', '92% Pressure', 'Low Pressure');
+        updateGearButton('suction', gear.suction.ready, 'READY', 'MISSING', 'Onboard', 'Gate Alerted');
+        updateGearButton('monitor', gear.monitor.ready, 'READY', 'CHECK', 'Battery 100%', 'Inspect');
+        updateGearButton('stretcher', gear.stretcher.ready, 'READY', 'CHECK', 'Locked In-Cab', 'Missing');
+
+        // Destination title
+        const destTitle = document.getElementById('navDestinationTitle');
+        destTitle.textContent = state.hospital.name + ' (' + state.hospital.lockedBed + ')';
+
+        // Reroute Card
+        const rbox = document.getElementById('rerouteCardBox');
+        const rtag = document.getElementById('rerouteTierTag');
+        const rsaved = document.getElementById('rerouteTimeSaved');
+        const rdesc = document.getElementById('rerouteDesc');
+
+        if (state.reroute.status === 'accepted') {
+          rbox.className = 'p-4 rounded-xl bg-[#E3F1E4] border-2 border-[#13213A] mb-3';
+          rtag.className = 'text-xs font-bold uppercase px-2 py-0.5 rounded bg-[#317E33] text-white';
+          rtag.textContent = '✓ REROUTE ACCEPTED · PROCEEDING AHEAD';
+          rsaved.textContent = 'Saves 8 mins';
+          rdesc.innerHTML = '<strong>Route updated:</strong> Now heading forward to <strong>Sadar District Trauma Center</strong>. ICU Bed #1 reserved.';
+        } else if (state.reroute.activeTier === 'green') {
+          rbox.className = 'p-4 rounded-xl bg-[#E3F1E4] border-2 border-[#13213A] mb-3';
+          rtag.className = 'text-xs font-bold uppercase px-2 py-0.5 rounded bg-[#317E33] text-white';
+          rtag.textContent = '🟢 GREEN TIER · VOICE ALERT · NO U-TURN (28° AHEAD)';
+          rsaved.textContent = 'Saves 8 Mins + Full ICU';
+          rdesc.innerHTML = '<strong>Sadar District Trauma Center</strong> just confirmed an open ICU Bed + Oxygen Team at Gate #1. It lies <strong>28° ahead on Station Road</strong> (zero U-turn needed) and saves 8 minutes over your initial destination.';
+        } else if (state.reroute.activeTier === 'yellow') {
+          rbox.className = 'p-4 rounded-xl bg-[#FDF6E2] border-2 border-[#13213A] mb-3';
+          rtag.className = 'text-xs font-bold uppercase px-2 py-0.5 rounded bg-[#E5B842] text-[#13213A]';
+          rtag.textContent = '🟡 YELLOW TIER · SILENT BANNER · 34° FORWARD HEADING';
+          rsaved.textContent = 'Saves 4 Mins · Same O₂ Fit';
+          rdesc.innerHTML = '<strong>Lifeline Multispecialty Clinic</strong> confirmed an open Oxygen Bed 34° ahead. Saves 4 minutes—shown as non-intrusive banner.';
+        } else if (state.reroute.activeTier === 'red') {
+          rbox.className = 'p-4 rounded-xl bg-[#FCE8E6] border-2 border-[#13213A] mb-3';
+          rtag.className = 'text-xs font-bold uppercase px-2 py-0.5 rounded bg-[#D63B2F] text-white';
+          rtag.textContent = '🔴 RED TIER · SUPPRESSED (REQUIRES 135° U-TURN)';
+          rsaved.textContent = 'Blocked by <45° Guard';
+          rdesc.innerHTML = '<strong>City Care Hospital</strong> replied late, but lies <strong>135° behind the ambulance</strong> and would require a dangerous U-turn in market traffic. Automatically suppressed.';
+        }
+
+        // Active reroute selector button
+        document.querySelectorAll('.reroute-tier-selector').forEach(btn => {
+          const t = btn.getAttribute('data-tier');
+          if (t === state.reroute.activeTier) {
+            btn.className = 'reroute-tier-selector al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-[#13213A] text-white';
+          } else {
+            btn.className = 'reroute-tier-selector al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]';
+          }
+        });
+      }
+
+      function updateGearButton(key, isReady, readyText, unreadyText, readySub, unreadySub) {
+        const badge = document.getElementById('badge-' + key);
+        const sub = document.getElementById('sub-' + key);
+        if (isReady) {
+          badge.textContent = readyText;
+          badge.className = 'text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#317E33] text-white';
+          sub.textContent = readySub;
+        } else {
+          badge.textContent = unreadyText;
+          badge.className = 'text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#E5B842] text-[#13213A]';
+          sub.textContent = unreadySub;
+        }
+      }
+
+      // Event Listeners
+      document.querySelectorAll('.gear-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const gearKey = btn.getAttribute('data-gear');
+          AarogyaLink.toggleGear(gearKey);
+        });
+      });
+
+      document.querySelectorAll('.driver-milestone-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const stage = btn.getAttribute('data-stage');
+          AarogyaLink.setDriverStage(stage);
+        });
+      });
+
+      document.querySelectorAll('.reroute-tier-selector').forEach(btn => {
+        btn.addEventListener('click', () => {
+          AarogyaLink.setRerouteTier(btn.getAttribute('data-tier'));
+        });
+      });
+
+      document.getElementById('driverAcceptRerouteBtn').addEventListener('click', () => {
+        AarogyaLink.acceptReroute();
+      });
+
+      document.getElementById('driverIgnoreRerouteBtn').addEventListener('click', () => {
+        AarogyaLink.ignoreReroute();
+      });
+
+      document.getElementById('playVoiceNoteBtn').addEventListener('click', () => {
+        AarogyaLink.playSound('chime');
+        AarogyaLink.showToast('🔊', 'Playing Voice Landmark', 'Caller audio: "Hum Kali Mandir Ward 4 ke samne khade hain, ambulance jaldi bhejiye."');
+      });
+
+      document.getElementById('callCallerBtn').addEventListener('click', () => {
+        AarogyaLink.showToast('📞', 'Calling Patient Caller...', 'Connecting to Ramesh Sharma (+91 94312 90124)...');
+      });
+
+      document.getElementById('sendVitalsUpdateBtn').addEventListener('click', () => {
+        AarogyaLink.showToast('📡', 'Vitals Transmitted to Sadar Desk', 'SpO2: 89%, Pulse: 104 bpm, BP: 135/88 relayed. Receiving desk updated.');
+      });
+
+      document.getElementById('sendSmsPingBtn').addEventListener('click', () => {
+        AarogyaLink.showToast('📲', 'Compressed SMS Ping Dispatched', 'GPS coords [25.850, 85.780] & ETA sent over 2G GSM channel.');
+      });
+
+      document.querySelectorAll('.step-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          AarogyaLink.setDemoStep(btn.getAttribute('data-step'));
+        });
+      });
+
+      document.getElementById('toggleLangBtn').addEventListener('click', () => {
+        AarogyaLink.toggleLanguage();
+      });
+
+      document.getElementById('toggleAudioBtn').addEventListener('click', () => {
+        const enabled = AarogyaLink.toggleSound();
+        document.getElementById('audioLabel').textContent = enabled ? 'Sound' : 'Muted';
+      });
+
+      document.getElementById('resetDemoBtn').addEventListener('click', () => {
+        AarogyaLink.resetAll();
+      });
+
+    })();
+  </script>
+</body>
+</html>

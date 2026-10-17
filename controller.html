@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AarogyaLink — EMS District Controller &amp; Health Dept Admin</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- TOP SHARED NAV BAR -->
+  <header class="sticky top-0 z-40 bg-[#F4EEDF]/95 backdrop-blur border-b-2 border-[#13213A] px-3 sm:px-6 py-2.5">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand Logo & Identity -->
+      <a href="index.html" class="flex items-center gap-3 text-decoration-none text-inherit">
+        <div class="w-10 h-10 rounded-xl bg-[#317E33] border-2 border-[#13213A] shadow-[0_3px_0_#13213A] flex items-center justify-center text-[#F4EEDF] font-display font-bold text-xl">
+          ✚
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-display font-bold text-xl sm:text-2xl tracking-tight text-[#13213A] leading-none">AarogyaLink</span>
+            <span class="al-pill-banner text-xs px-2 py-0.5 not-italic font-sans font-semibold">Bihar Pilot</span>
+          </div>
+          <p class="text-xs text-[#4A586E] font-medium hidden sm:block">Samastipur District Emergency Medical Network</p>
+        </div>
+      </a>
+
+      <!-- Role-Based Navigation Switcher -->
+      <nav class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+        <a href="patient.html" class="al-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-white text-[#13213A]">
+          <span>📱</span> <span>Patient App</span>
+        </a>
+        <a href="driver.html" class="al-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-white text-[#13213A]">
+          <span>🚑</span> <span>Ambulance</span>
+        </a>
+        <a href="hospital.html" class="al-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-white text-[#13213A]">
+          <span>🏥</span> <span>Hospital Desk</span>
+        </a>
+        <a href="controller.html" class="al-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 nav-link-active">
+          <span>🛡️</span> <span>EMS Admin</span>
+        </a>
+        <a href="index.html" class="al-btn px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1 bg-[#E6DEC8] text-[#13213A]">
+          <span>⚡</span> <span>Hub / Quad</span>
+        </a>
+      </nav>
+
+      <!-- Global Controls -->
+      <div class="flex items-center gap-1.5">
+        <button id="toggleLangBtn" class="al-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-[#13213A]">
+          🌐 <span id="langLabel">EN / हिन्दी</span>
+        </button>
+        <button id="toggleAudioBtn" class="al-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-[#13213A]">
+          🔊 <span id="audioLabel">Sound</span>
+        </button>
+        <button id="resetDemoBtn" class="al-btn px-2 py-1 rounded-lg text-xs font-bold bg-[#E6DEC8] text-[#13213A]">
+          ↺ Reset
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- QUICK DEMO STEPPER BAR -->
+  <aside class="bg-[#E6DEC8] border-b-2 border-[#13213A] px-3 sm:px-6 py-2">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-[#13213A] uppercase tracking-wider flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#317E33] inline-block radar-ping"></span>
+          District Controller Command State:
+        </span>
+        <div class="flex items-center gap-1">
+          <button data-step="idle" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">0. Idle</button>
+          <button data-step="dispatched" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">1. SOS</button>
+          <button data-step="confirmed" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-[#317E33] text-[#F4EEDF]">2. Confirmed</button>
+          <button data-step="reroute" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">3. Reroute</button>
+          <button data-step="arrived" class="step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]">4. Arrived</button>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-[#4A586E] font-medium hidden md:inline">Synchronizing with live Bihar 108/112 CAD gateway</span>
+        <span class="px-2 py-0.5 rounded bg-white border border-[#13213A] font-bold">Samastipur EMS Hub</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTROLLER CONTENT -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-6">
+
+    <!-- Header Section -->
+    <div class="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div>
+        <div class="inline-block al-pill-banner px-4 py-1 text-sm sm:text-base mb-1">
+          Portal 4 · EMS District Controller &amp; Health Dept Admin
+        </div>
+        <h1 class="font-display font-bold text-2xl sm:text-4xl text-[#13213A] tracking-tight">
+          Samastipur Command Center, Standby Pool &amp; Ethical Dispatch Audit
+        </h1>
+        <p class="text-sm text-[#4A586E] mt-1 font-medium">
+          District-wide ambulance fleet monitoring, transparent non-commercial dispatch rules, and verified pilot data collection.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="px-3 py-1.5 rounded-xl bg-[#E3F1E4] border-2 border-[#13213A] text-xs font-bold text-[#13213A] shadow-[0_3px_0_#13213A]">
+          🔒 Equal-Care Audit: Zero Paid Priority Override
+        </span>
+      </div>
+    </div>
+
+    <!-- Top 4 District KPI Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="al-card p-4">
+        <div class="text-xs font-bold uppercase text-[#4A586E]">Active SOS Trips</div>
+        <div class="font-mono-num font-bold text-2xl sm:text-3xl text-[#13213A] mt-1">4 Live</div>
+        <div class="text-xs font-semibold text-[#317E33] mt-1">✓ 100% Front-Desk Confirmed</div>
+      </div>
+      <div class="al-card p-4">
+        <div class="text-xs font-bold uppercase text-[#4A586E]">Samastipur Fleet Online</div>
+        <div class="font-mono-num font-bold text-2xl sm:text-3xl text-[#13213A] mt-1">18 / 22</div>
+        <div class="text-xs font-semibold text-[#4A586E] mt-1">14 w/ Oxygen · 4 Basic Vans</div>
+      </div>
+      <div class="al-card p-4">
+        <div class="text-xs font-bold uppercase text-[#4A586E]">Pilot Trips Logged (AI Gate)</div>
+        <div class="font-mono-num font-bold text-2xl sm:text-3xl text-[#317E33] mt-1" id="adminTripCounter">42 / 100</div>
+        <div class="text-xs font-semibold text-[#4A586E] mt-1">Rules Now → AI at 100 Trips</div>
+      </div>
+      <div class="al-card p-4">
+        <div class="text-xs font-bold uppercase text-[#4A586E]">Monthly District Sustainability</div>
+        <div class="font-mono-num font-bold text-2xl sm:text-3xl text-[#13213A] mt-1">+₹79,000</div>
+        <div class="text-xs font-semibold text-[#317E33] mt-1">₹1.30L Rev vs ₹51K Cost (₹17/call)</div>
+      </div>
+    </div>
+
+    <!-- Active Multi-Trip Dispatch Table -->
+    <div class="al-card p-5 mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 al-dotted-rule">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#317E33]">Live Multi-Trip Dispatch Console</span>
+          <h2 class="font-display font-bold text-xl text-[#13213A]">Active Emergency Trips &amp; Standby Pool</h2>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="adminLogTripBtn" class="al-btn bg-[#317E33] text-[#F4EEDF] text-xs font-bold px-3 py-1.5 rounded-lg">
+            + Log Verified Pilot Trip
+          </button>
+          <button id="adminPingHospitalsBtn" class="al-btn bg-[#E6DEC8] text-[#13213A] text-xs font-bold px-3 py-1.5 rounded-lg">
+            📡 Ping All 10 Hospital Desks
+          </button>
+        </div>
+      </div>
+
+      <div class="al-table-wrap">
+        <table class="al-table">
+          <thead>
+            <tr>
+              <th>Case ID &amp; Location</th>
+              <th>Symptom &amp; Triage</th>
+              <th>Assigned Vehicle</th>
+              <th>Equipment Fit Status</th>
+              <th>Locked Hospital</th>
+              <th>Standby Pool</th>
+              <th>Controller Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Current Highlighted Live Case -->
+            <tr class="bg-[#FDF6E2]/70 font-medium">
+              <td>
+                <strong class="font-mono-num text-[#13213A]">#SOS-8492</strong><br/>
+                <span class="text-[11px] text-[#4A586E]">Near Kali Mandir, Ward 4</span>
+              </td>
+              <td>
+                <span>🫁 Severe Breathing</span><br/>
+                <span class="text-[11px] text-[#317E33] font-bold">Needs O₂ + ICU</span>
+              </td>
+              <td>
+                <span class="font-mono-num font-bold">BR-33-P-4821</span><br/>
+                <span class="text-[11px] text-[#4A586E]">Rajesh Kumar (4m)</span>
+              </td>
+              <td>
+                <span class="al-badge bg-[#FDF6E2] text-[#13213A]">⚠️ Suction at Gate #1</span><br/>
+                <span class="text-[10px] text-[#4A586E]">O₂ Tank (92%) Onboard</span>
+              </td>
+              <td>
+                <strong class="text-[#317E33]">Sadar District Hospital</strong><br/>
+                <span class="text-[11px] text-[#4A586E]">ICU Bed #4 Confirmed</span>
+              </td>
+              <td>
+                <span class="text-[11px]">1. RPCAU CHC (12m)<br/>2. Tajpur Ref (18m)</span>
+              </td>
+              <td>
+                <button class="al-btn bg-white text-xs px-2.5 py-1 rounded" onclick="AarogyaLink.showToast('🛡️', 'Case Monitored', 'Monitoring #SOS-8492 live.')">
+                  Audit Log
+                </button>
+              </td>
+            </tr>
+
+            <!-- Other Active District Trips -->
+            <tr>
+              <td>
+                <strong class="font-mono-num">#SOS-8488</strong><br/>
+                <span class="text-[11px] text-[#4A586E]">Tajpur NH-28 Km 44</span>
+              </td>
+              <td>
+                <span>🩸 Highway Trauma</span><br/>
+                <span class="text-[11px] text-[#4A586E]">Needs Suction + OT</span>
+              </td>
+              <td>
+                <span class="font-mono-num">BR-33-A-1029</span><br/>
+                <span class="text-[11px] text-[#4A586E]">Deepak Yadav (8m)</span>
+              </td>
+              <td>
+                <span class="al-badge bg-[#E3F1E4] text-[#317E33]">✅ 100% Fit Onboard</span>
+              </td>
+              <td>
+                <strong>Tajpur Referral Hospital</strong><br/>
+                <span class="text-[11px] text-[#4A586E]">OT Bay #2 Confirmed</span>
+              </td>
+              <td>
+                <span class="text-[11px]">Sadar Hospital (Standby)</span>
+              </td>
+              <td>
+                <button class="al-btn bg-white text-xs px-2.5 py-1 rounded" onclick="AarogyaLink.showToast('🛡️', 'Trip Logged', 'Case #SOS-8488 is en route.')">
+                  Details
+                </button>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <strong class="font-mono-num">#SOS-8485</strong><br/>
+                <span class="text-[11px] text-[#4A586E]">Pusa Agriculture Univ</span>
+              </td>
+              <td>
+                <span>❤️ Cardiac Distress</span><br/>
+                <span class="text-[11px] text-[#4A586E]">Needs Defib + CCU</span>
+              </td>
+              <td>
+                <span class="font-mono-num">BR-33-C-9901</span><br/>
+                <span class="text-[11px] text-[#4A586E]">Mohammed Ali (11m)</span>
+              </td>
+              <td>
+                <span class="al-badge bg-[#E3F1E4] text-[#317E33]">✅ Ventilator Ready</span>
+              </td>
+              <td>
+                <strong>RPCAU Health Centre</strong><br/>
+                <span class="text-[11px] text-[#4A586E]">Emergency Bed #1 Locked</span>
+              </td>
+              <td>
+                <span class="text-[11px]">Sadar Trauma (Standby)</span>
+              </td>
+              <td>
+                <button class="al-btn bg-white text-xs px-2.5 py-1 rounded" onclick="AarogyaLink.showToast('🛡️', 'Trip Logged', 'Case #SOS-8485 is admitted.')">
+                  Details
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Two-Column Grid: AI Data Readiness Gate + Fleet Radar -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- AI READINESS GATE & VERIFIED PILOT DATASET (Spec Section 6 & 7) -->
+      <div class="lg:col-span-6">
+        <div class="al-card p-5">
+          <div class="flex items-center justify-between pb-3 mb-3 al-dotted-rule">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#317E33]">Spec Section 6: No Fake Rigor</span>
+              <h2 class="font-display font-bold text-xl text-[#13213A]">Pilot AI Readiness Tracker</h2>
+            </div>
+            <span class="text-xs font-mono-num font-bold px-2 py-0.5 rounded bg-[#E3F1E4] text-[#317E33]">
+              Phase 1 Active
+            </span>
+          </div>
+
+          <p class="text-xs text-[#13213A] leading-relaxed mb-4">
+            Per spec section 6: <em>"Fitting Bayesian acceptance prediction or ML bandit models to zero real data is fake rigor."</em> AarogyaLink runs purely on honest, explainable rules (ETA + equipment fit) until <strong>100 verified trips</strong> are logged in Samastipur.
+          </p>
+
+          <!-- Progress Bar -->
+          <div class="bg-[#E6DEC8] border-2 border-[#13213A] rounded-xl p-1 mb-2">
+            <div id="aiProgressBar" class="h-4 rounded-lg bg-[#317E33] transition-all duration-300" style="width: 42%;"></div>
+          </div>
+          <div class="flex items-center justify-between text-xs font-bold mb-4">
+            <span id="aiProgressText" class="text-[#317E33]">42 / 100 Verified Trips Logged</span>
+            <span class="text-[#4A586E]">58 More to Unlock Phase 2 ML</span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-[#F4EEDF] border border-[#13213A] text-xs space-y-1.5">
+            <div class="font-bold text-[#13213A]">What unlocks at 100 real trips?</div>
+            <div class="text-[#4A586E]">1. Samastipur traffic-hour learned delays (Station Rd vs NH-28)</div>
+            <div class="text-[#4A586E]">2. Hospital front-desk historical acceptance response probability</div>
+            <div class="text-[#4A586E]">3. Predictive bed discharge turnaround forecasts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLEET READINESS RADAR & DISTRICT TELEMETRY -->
+      <div class="lg:col-span-6">
+        <div class="al-card p-5">
+          <div class="flex items-center justify-between pb-3 mb-3 al-dotted-rule">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#317E33]">Fleet Radar</span>
+              <h2 class="font-display font-bold text-xl text-[#13213A]">Samastipur Registered Ambulances</h2>
+            </div>
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-[#317E33] text-white">
+              18 Live
+            </span>
+          </div>
+
+          <div class="space-y-2.5">
+            <div class="p-3 rounded-xl bg-[#E3F1E4] border border-[#13213A] flex items-center justify-between text-xs">
+              <div>
+                <div class="font-bold text-[#13213A]">BR-33-P-4821 · Rajesh Kumar</div>
+                <div class="text-[#4A586E]">Kali Mandir Sector · O₂ Cylinder (92%) + Oximeter</div>
+              </div>
+              <span class="font-bold text-[#317E33]">BUSY (En Route)</span>
+            </div>
+
+            <div class="p-3 rounded-xl bg-white border border-[#13213A] flex items-center justify-between text-xs">
+              <div>
+                <div class="font-bold text-[#13213A]">BR-33-A-1029 · Ravi Kumar</div>
+                <div class="text-[#4A586E]">Sadar Hospital Stand · Full ALS Ventilator + O₂</div>
+              </div>
+              <span class="font-bold text-[#317E33]">AVAILABLE</span>
+            </div>
+
+            <div class="p-3 rounded-xl bg-white border border-[#13213A] flex items-center justify-between text-xs">
+              <div>
+                <div class="font-bold text-[#13213A]">BR-33-C-9901 · Mohammed Ali</div>
+                <div class="text-[#4A586E]">Pusa Agriculture Stand · O₂ + Defibrillator</div>
+              </div>
+              <span class="font-bold text-[#317E33]">AVAILABLE</span>
+            </div>
+
+            <div class="p-3 rounded-xl bg-white border border-[#13213A] flex items-center justify-between text-xs">
+              <div>
+                <div class="font-bold text-[#13213A]">BR-33-D-5512 · Sanjay Singh</div>
+                <div class="text-[#4A586E]">Tajpur Stand · Basic Van (No O₂)</div>
+              </div>
+              <span class="font-bold text-[#4A586E]">AVAILABLE (Basic)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 max-w-md hidden"></div>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#317E33] border-t-2 border-[#13213A] text-[#F4EEDF] px-4 sm:px-6 py-3 mt-8">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="font-display font-bold text-base">AarogyaLink · TheWhales India</span>
+        <span>·</span>
+        <span>Portal 4: EMS District Controller &amp; Health Dept Admin</span>
+      </div>
+      <div class="font-medium">
+        Samastipur District Health Directorate · Non-Commercial Equal Care
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT -->
+  <script src="js/shared-state.js"></script>
+  <script>
+    (function() {
+      AarogyaLink.subscribe((state, eventType) => {
+        updateControllerUI(state);
+      });
+
+      function updateControllerUI(state) {
+        // Step buttons
+        document.querySelectorAll('.step-btn').forEach(btn => {
+          const s = btn.getAttribute('data-step');
+          if (s === state.demoStep) {
+            btn.className = 'step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-[#317E33] text-[#F4EEDF]';
+          } else {
+            btn.className = 'step-btn al-btn px-2 py-0.5 rounded text-[11px] font-bold bg-white text-[#13213A]';
+          }
+        });
+
+        // AI counter & progress bar
+        const trips = state.controller.pilotTrips;
+        document.getElementById('adminTripCounter').textContent = trips + ' / 100';
+        document.getElementById('aiProgressBar').style.width = trips + '%';
+        document.getElementById('aiProgressText').textContent = trips + ' / 100 Verified Trips Logged';
+      }
+
+      document.getElementById('adminLogTripBtn').addEventListener('click', () => {
+        AarogyaLink.logPilotTrip();
+      });
+
+      document.getElementById('adminPingHospitalsBtn').addEventListener('click', () => {
+        AarogyaLink.playSound('chime');
+        AarogyaLink.showToast('📡', 'District Oxygen & Bed Ping Sent', 'All 10 Samastipur hospitals polled via Web and SMS fallback.');
+      });
+
+      document.querySelectorAll('.step-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          AarogyaLink.setDemoStep(btn.getAttribute('data-step'));
+        });
+      });
+
+      document.getElementById('toggleLangBtn').addEventListener('click', () => {
+        AarogyaLink.toggleLanguage();
+      });
+
+      document.getElementById('toggleAudioBtn').addEventListener('click', () => {
+        const enabled = AarogyaLink.toggleSound();
+        document.getElementById('audioLabel').textContent = enabled ? 'Sound' : 'Muted';
+      });
+
+      document.getElementById('resetDemoBtn').addEventListener('click', () => {
+        AarogyaLink.resetAll();
+      });
+
+    })();
+  </script>
+</body>
+</html>
