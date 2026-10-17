@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AarogyaLink — Ambulance Driver Tablet &amp; Smartphone Interface</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="css/leaflet.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -287,53 +288,40 @@
             </div>
           </div>
 
-          <!-- Interactive SVG Live Map -->
-          <div class="relative bg-[#E6DEC8] border-2 border-[#13213A] rounded-xl p-3 h-64 overflow-hidden flex items-center justify-center shadow-inner">
-            <svg class="w-full h-full" viewBox="0 0 500 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Grid Roads -->
-              <line x1="20" y1="120" x2="480" y2="120" stroke="#13213A" stroke-width="4" stroke-linecap="round"/>
-              <line x1="180" y1="20" x2="180" y2="220" stroke="#13213A" stroke-width="3" stroke-linecap="round"/>
-              <line x1="360" y1="20" x2="360" y2="220" stroke="#13213A" stroke-width="3" stroke-linecap="round"/>
-              <line x1="20" y1="60" x2="480" y2="60" stroke="#13213A" stroke-width="1.5" stroke-dasharray="4 4"/>
-              <line x1="20" y1="180" x2="480" y2="180" stroke="#13213A" stroke-width="1.5" stroke-dasharray="4 4"/>
-              
-              <!-- Active Route Path Animated -->
-              <path d="M 60 120 L 180 120 L 180 60 L 420 60" stroke="#317E33" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" class="route-line-animated"/>
-              
-              <!-- Patient Pin -->
-              <g transform="translate(50, 105)">
-                <circle cx="10" cy="15" r="14" fill="#D63B2F" stroke="#13213A" stroke-width="2"/>
-                <text x="10" y="20" text-anchor="middle" font-size="12" fill="#FFFFFF" font-weight="bold">📍</text>
-                <rect x="-30" y="-18" width="80" height="18" rx="4" fill="#13213A"/>
-                <text x="10" y="-5" text-anchor="middle" font-size="9" fill="#F4EEDF" font-weight="bold">Kali Mandir</text>
-              </g>
+          <!-- Interactive Live Turn-by-Turn GPS Map -->
+          <div class="relative mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-1.5 text-xs font-bold text-[#13213A]">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#317E33] inline-block radar-ping"></span>
+                <span>Real-Time Turn-by-Turn GPS HUD</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="driverMapSimBtn" class="al-btn bg-[#317E33] text-[#F4EEDF] text-[11px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
+                  <span id="driverSimIcon">▶</span> <span id="driverSimLabel">Simulate Drive</span>
+                </button>
+                <button id="driverFocusBtn" class="al-btn bg-white text-[#13213A] text-[11px] font-bold px-2 py-0.5 rounded">
+                  Follow
+                </button>
+                <button id="driverFitBtn" class="al-btn bg-white text-[#13213A] text-[11px] font-bold px-2 py-0.5 rounded">
+                  Route
+                </button>
+                <button id="driverNightModeBtn" class="al-btn bg-[#13213A] text-[#F4EEDF] text-[11px] font-bold px-2 py-0.5 rounded" title="Night / Contrast Mode">
+                  🌙 Night
+                </button>
+              </div>
+            </div>
 
-              <!-- Ambulance Vehicle Pin -->
-              <g transform="translate(165, 95)">
-                <circle cx="15" cy="15" r="18" fill="#FFFFFF" stroke="#13213A" stroke-width="2"/>
-                <text x="15" y="21" text-anchor="middle" font-size="16">🚑</text>
-                <rect x="-25" y="-18" width="80" height="18" rx="4" fill="#317E33"/>
-                <text x="15" y="-5" text-anchor="middle" font-size="9" fill="#FFFFFF" font-weight="bold">BR-33 (You)</text>
-              </g>
+            <div id="driverMapWrapper" class="relative rounded-xl overflow-hidden border-2 border-[#13213A] shadow-inner">
+              <div id="driverLiveMap" class="h-64 sm:h-72 w-full relative z-0"></div>
 
-              <!-- Primary Hospital Pin -->
-              <g transform="translate(405, 45)">
-                <circle cx="15" cy="15" r="18" fill="#317E33" stroke="#13213A" stroke-width="2"/>
-                <text x="15" y="22" text-anchor="middle" font-size="16" fill="#FFFFFF">🏥</text>
-                <rect x="-40" y="-18" width="110" height="18" rx="4" fill="#13213A"/>
-                <text x="15" y="-5" text-anchor="middle" font-size="9" fill="#F4EEDF" font-weight="bold">Sadar Hospital #1</text>
-              </g>
-
-              <!-- Standby Alternate Hospital (28° forward ahead) -->
-              <g transform="translate(350, 165)">
-                <circle cx="12" cy="12" r="14" fill="#E5B842" stroke="#13213A" stroke-width="2"/>
-                <text x="12" y="17" text-anchor="middle" font-size="12">🏥</text>
-                <rect x="-45" y="30" width="115" height="16" rx="4" fill="#E5B842"/>
-                <text x="12" y="42" text-anchor="middle" font-size="8" fill="#13213A" font-weight="bold">Trauma Ctr (Standby)</text>
-              </g>
-            </svg>
-            <div class="absolute bottom-2 left-2 bg-white/90 border border-[#13213A] rounded px-2 py-0.5 text-[10px] font-bold font-mono-num">
-              GPS Speed: 42 km/h · Forward Heading: 28° NE
+              <!-- Live Heading / Speed Badge Overlay -->
+              <div class="absolute bottom-2 left-2 z-[500] pointer-events-none">
+                <div class="bg-[#13213A]/95 text-[#F4EEDF] border border-[#13213A] rounded px-2.5 py-1 text-[11px] font-bold font-mono-num flex items-center gap-2 pointer-events-auto">
+                  <span class="text-[#E5B842]">GPS: <span id="driverMapSpeed">42 km/h</span></span>
+                  <span>·</span>
+                  <span class="text-[#317E33]" id="driverMapHeading">Heading: 28° NE</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -425,9 +413,55 @@
   </footer>
 
   <!-- SCRIPT -->
+  <script src="js/leaflet.js"></script>
   <script src="js/shared-state.js"></script>
+  <script src="js/live-map.js"></script>
   <script>
     (function() {
+      // Initialize Live Driver Navigation Map
+      let driverMap = null;
+      if (window.AarogyaLinkMap) {
+        driverMap = AarogyaLinkMap.initTrackingMap('driverLiveMap', {
+          mode: 'driver',
+          simBtnId: 'driverMapSimBtn',
+          speedBadgeId: 'driverMapSpeed'
+        });
+      }
+
+      const simBtn = document.getElementById('driverMapSimBtn');
+      if (simBtn) {
+        simBtn.addEventListener('click', () => {
+          if (driverMap) driverMap.toggleSimulation();
+        });
+      }
+
+      const focusBtn = document.getElementById('driverFocusBtn');
+      if (focusBtn) {
+        focusBtn.addEventListener('click', () => {
+          if (driverMap) driverMap.focusAmbulance();
+        });
+      }
+
+      const fitBtn = document.getElementById('driverFitBtn');
+      if (fitBtn) {
+        fitBtn.addEventListener('click', () => {
+          if (driverMap) driverMap.fitRoute();
+        });
+      }
+
+      const nightBtn = document.getElementById('driverNightModeBtn');
+      if (nightBtn) {
+        nightBtn.addEventListener('click', () => {
+          const wrapper = document.getElementById('driverMapWrapper');
+          if (wrapper) {
+            wrapper.classList.toggle('al-map-night-mode');
+            const isNight = wrapper.classList.contains('al-map-night-mode');
+            nightBtn.textContent = isNight ? '☀️ Day' : '🌙 Night';
+            AarogyaLink.showToast('🌙', 'Map Contrast Mode', isNight ? 'High-contrast Night HUD active' : 'Day mode active');
+          }
+        });
+      }
+
       AarogyaLink.subscribe((state, eventType) => {
         updateDriverUI(state);
       });

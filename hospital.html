@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AarogyaLink — Hospital Front-Desk Reception Portal</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="css/leaflet.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -151,6 +152,27 @@
               </div>
               <div class="text-[#317E33] font-bold mt-1">
                 Onboard: Oxygen Tank (92%) + Oximeter
+              </div>
+            </div>
+          </div>
+
+          <!-- INCOMING AMBULANCE LIVE APPROACH MAP -->
+          <div class="mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#13213A] flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#317E33] inline-block radar-ping"></span>
+                <span>Live Inbound Approach to Gate #1</span>
+              </span>
+              <button id="hospFocusAmbBtn" class="al-btn bg-white text-[#13213A] text-[11px] font-bold px-2 py-0.5 rounded">
+                Focus Ambulance
+              </button>
+            </div>
+            <div class="relative rounded-xl overflow-hidden border-2 border-[#13213A] shadow-inner">
+              <div id="hospLiveMap" class="h-52 w-full relative z-0"></div>
+              <div class="absolute bottom-2 left-2 z-[500] pointer-events-none">
+                <div class="bg-white/95 backdrop-blur border border-[#13213A] rounded px-2 py-0.5 text-[10px] font-bold font-mono-num pointer-events-auto">
+                  <span class="text-[#317E33]">● Approaching via Station Road · Gate #1 Staging</span>
+                </div>
               </div>
             </div>
           </div>
@@ -399,9 +421,26 @@
   </footer>
 
   <!-- SCRIPT -->
+  <script src="js/leaflet.js"></script>
   <script src="js/shared-state.js"></script>
+  <script src="js/live-map.js"></script>
   <script>
     (function() {
+      // Initialize Inbound Approach Map
+      let hospMap = null;
+      if (window.AarogyaLinkMap) {
+        hospMap = AarogyaLinkMap.initTrackingMap('hospLiveMap', {
+          mode: 'patient'
+        });
+      }
+
+      const focusAmbBtn = document.getElementById('hospFocusAmbBtn');
+      if (focusAmbBtn) {
+        focusAmbBtn.addEventListener('click', () => {
+          if (hospMap) hospMap.focusAmbulance();
+        });
+      }
+
       AarogyaLink.subscribe((state, eventType) => {
         updateHospitalUI(state);
       });

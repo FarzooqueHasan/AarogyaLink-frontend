@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AarogyaLink — EMS District Controller &amp; Health Dept Admin</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="css/leaflet.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -311,6 +312,35 @@
             </span>
           </div>
 
+          <!-- Interactive District Fleet & Incident Radar Map -->
+          <div class="mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-1.5 text-xs font-bold text-[#13213A]">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#317E33] inline-block radar-ping"></span>
+                <span>District Live Fleet Radar &amp; Active Incidents</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="controllerRecenterBtn" class="al-btn bg-white text-[#13213A] text-[11px] font-bold px-2 py-0.5 rounded">
+                  Samastipur Focus
+                </button>
+                <button id="controllerFitAllBtn" class="al-btn bg-white text-[#13213A] text-[11px] font-bold px-2 py-0.5 rounded">
+                  Fit Fleet
+                </button>
+              </div>
+            </div>
+
+            <div class="relative rounded-xl overflow-hidden border-2 border-[#13213A] shadow-inner">
+              <div id="controllerRadarMap" class="h-60 sm:h-64 w-full relative z-0"></div>
+              <div class="absolute bottom-2 left-2 z-[500] pointer-events-none">
+                <div class="bg-white/95 backdrop-blur border border-[#13213A] rounded px-2 py-0.5 text-[10px] font-bold font-mono-num flex items-center gap-2 pointer-events-auto">
+                  <span class="text-[#317E33]">● 14 ALS Ready</span>
+                  <span>·</span>
+                  <span class="text-[#D63B2F]">● 1 SOS Incident Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="space-y-2.5">
             <div class="p-3 rounded-xl bg-[#E3F1E4] border border-[#13213A] flex items-center justify-between text-xs">
               <div>
@@ -369,9 +399,33 @@
   </footer>
 
   <!-- SCRIPT -->
+  <script src="js/leaflet.js"></script>
   <script src="js/shared-state.js"></script>
+  <script src="js/live-map.js"></script>
   <script>
     (function() {
+      // Initialize District Radar Map
+      let radarMap = null;
+      if (window.AarogyaLinkMap) {
+        radarMap = AarogyaLinkMap.initTrackingMap('controllerRadarMap', {
+          mode: 'controller'
+        });
+      }
+
+      const recenterBtn = document.getElementById('controllerRecenterBtn');
+      if (recenterBtn) {
+        recenterBtn.addEventListener('click', () => {
+          if (radarMap) radarMap.focusAmbulance();
+        });
+      }
+
+      const fitAllBtn = document.getElementById('controllerFitAllBtn');
+      if (fitAllBtn) {
+        fitAllBtn.addEventListener('click', () => {
+          if (radarMap) radarMap.fitRoute();
+        });
+      }
+
       AarogyaLink.subscribe((state, eventType) => {
         updateControllerUI(state);
       });

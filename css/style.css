@@ -347,3 +347,277 @@ body {
 .sound-active {
   color: var(--al-brand-green);
 }
+
+/* ==========================================================================
+   AarogyaLink — Live Tracking Leaflet Map Styling
+   ========================================================================== */
+
+.al-map-container {
+  background-color: var(--al-bg-sand);
+  border: var(--border-ink);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+}
+
+/* Custom Marker Styles */
+.al-custom-icon-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* 1. Ambulance Marker */
+.al-map-marker-ambulance {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.al-marker-pulse {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  background-color: rgba(49, 126, 51, 0.45);
+  animation: ambPulse 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes ambPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  70%, 100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.al-marker-badge {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.al-marker-icon {
+  font-size: 24px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 2px rgba(19, 33, 58, 0.4));
+  transform: translateY(-2px);
+}
+
+.al-marker-pill {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background-color: var(--al-brand-green);
+  color: #FFFFFF;
+  border: 1.5px solid var(--al-ink-primary);
+  border-radius: 6px;
+  padding: 1px 4px;
+  box-shadow: 0 2px 0 var(--al-ink-primary);
+  white-space: nowrap;
+}
+
+.al-marker-plate {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.al-marker-speed {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  opacity: 0.9;
+}
+
+/* 2. Patient Marker */
+.al-map-marker-patient {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.al-marker-pulse-red {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  background-color: rgba(214, 59, 47, 0.45);
+  animation: ambPulse 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+.al-marker-badge-red {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.al-marker-badge-red .al-marker-icon {
+  font-size: 20px;
+}
+
+.al-marker-label {
+  background-color: var(--al-sos-red);
+  color: #FFFFFF;
+  border: 1.5px solid var(--al-ink-primary);
+  border-radius: 6px;
+  padding: 1px 4px;
+  font-size: 8.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 2px 0 var(--al-ink-primary);
+}
+
+/* 3. Hospital Marker */
+.al-map-marker-hospital {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.al-hosp-pin {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #FFFFFF;
+  border: 2px solid var(--al-ink-primary);
+  border-radius: 8px;
+  padding: 2px 6px;
+  box-shadow: 0 3px 0 var(--al-ink-primary);
+  white-space: nowrap;
+}
+
+.al-map-marker-hospital.primary .al-hosp-pin {
+  background-color: var(--al-brand-green-soft);
+  border-color: var(--al-brand-green-dark);
+}
+
+.al-map-marker-hospital.standby .al-hosp-pin {
+  background-color: var(--al-warn-amber-soft);
+  border-color: var(--al-ink-primary);
+}
+
+.al-hosp-emoji {
+  font-size: 16px;
+}
+
+.al-hosp-name {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--al-ink-primary);
+}
+
+.al-hosp-bed {
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--al-brand-green);
+}
+
+.al-map-marker-hospital.standby .al-hosp-bed {
+  color: var(--al-ink-muted);
+}
+
+/* 4. Fleet Pip for Controller Radar */
+.al-map-marker-fleet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fleet-pip {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  border: 2px solid var(--al-ink-primary);
+  box-shadow: 0 2px 0 var(--al-ink-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.fleet-label {
+  background-color: #FFFFFF;
+  border: 1px solid var(--al-ink-primary);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  padding: 0 3px;
+  margin-top: 1px;
+  white-space: nowrap;
+}
+
+/* Custom Leaflet Popup Overrides */
+.leaflet-popup-content-wrapper {
+  background-color: #FFFFFF !important;
+  border: 2px solid var(--al-ink-primary) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 0 var(--al-ink-primary) !important;
+  color: var(--al-ink-primary) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 10px 12px !important;
+  line-height: 1.35 !important;
+}
+
+.leaflet-popup-tip {
+  background-color: #FFFFFF !important;
+  border: 2px solid var(--al-ink-primary) !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  top: 6px !important;
+  right: 8px !important;
+  color: var(--al-ink-primary) !important;
+  font-weight: bold !important;
+}
+
+/* Leaflet Zoom Controls Customization */
+.leaflet-control-zoom {
+  border: 2px solid var(--al-ink-primary) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 3px 0 var(--al-ink-primary) !important;
+  overflow: hidden;
+}
+
+.leaflet-control-zoom a {
+  background-color: #FFFFFF !important;
+  color: var(--al-ink-primary) !important;
+  font-weight: 800 !important;
+  border: none !important;
+  transition: background-color 0.1s ease;
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: var(--al-bg-sand) !important;
+}
+
+.leaflet-control-zoom-in {
+  border-bottom: 1.5px solid var(--al-ink-primary) !important;
+}
+
+/* Night / High-Contrast Mode for Driver HUD */
+.al-map-night-mode .leaflet-tile-pane {
+  filter: brightness(0.8) invert(1) hue-rotate(180deg) contrast(1.15);
+}

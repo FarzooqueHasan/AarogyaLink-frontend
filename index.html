@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AarogyaLink — Bihar Pilot Unified Frontend Hub</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="css/leaflet.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -364,6 +365,74 @@
         </div>
 
       </div>
+
+      <!-- LIVE TRACKING MAP RADAR IN QUAD SHOWCASE -->
+      <div class="mt-6 pt-5 border-t-2 border-[#13213A]/20">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-[#D63B2F] inline-block radar-ping"></span>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#13213A]">
+              Live GPS Fleet &amp; Patient Route Tracking
+            </span>
+            <span class="text-[10px] font-mono-num font-bold px-2 py-0.5 rounded bg-[#E3F1E4] text-[#317E33] border border-[#13213A]">
+              Samastipur Live Telemetry
+            </span>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs">
+            <button id="hubMapSimBtn" class="al-btn bg-[#317E33] text-[#F4EEDF] text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
+              <span id="hubSimIcon">▶</span> <span id="hubSimLabel">Simulate Drive</span>
+            </button>
+            <button id="hubMapFocusBtn" class="al-btn bg-white text-[#13213A] text-[11px] font-bold px-2.5 py-1 rounded-lg">
+              🚑 Focus Van
+            </button>
+            <button id="hubMapFitBtn" class="al-btn bg-white text-[#13213A] text-[11px] font-bold px-2.5 py-1 rounded-lg">
+              🗺️ Fit Route
+            </button>
+          </div>
+        </div>
+
+        <div class="relative rounded-2xl overflow-hidden border-2 border-[#13213A] shadow-[0_4px_0_#13213A]">
+          <div id="hubLiveMap" class="h-80 sm:h-96 w-full relative z-0"></div>
+
+          <!-- Floating Status Overlay -->
+          <div class="absolute top-3 left-3 z-[500] pointer-events-none">
+            <div class="bg-white/95 backdrop-blur border-2 border-[#13213A] rounded-xl p-3 shadow-[0_3px_0_#13213A] text-xs pointer-events-auto flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-[#317E33] text-white flex items-center justify-center font-bold text-xl">
+                🚑
+              </div>
+              <div>
+                <div class="font-bold text-[#13213A] flex items-center gap-2">
+                  <span>BR-33-P-4821 (Rajesh Kumar)</span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#E3F1E4] text-[#317E33] font-mono-num font-bold" id="hubSpeedBadge">42 km/h</span>
+                </div>
+                <div class="text-[11px] text-[#4A586E] font-medium" id="hubEtaSubtext">
+                  En route to Sadar District Hospital · <strong class="text-[#317E33]" id="hubEtaBadge">4 mins away</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Legend -->
+          <div class="absolute bottom-3 left-3 right-3 z-[500] pointer-events-none">
+            <div class="bg-[#F4EEDF]/95 backdrop-blur border-2 border-[#13213A] rounded-xl px-3 py-1.5 shadow-[0_2px_0_#13213A] text-[11px] font-bold flex flex-wrap items-center justify-between gap-2 pointer-events-auto">
+              <div class="flex items-center gap-3">
+                <span class="flex items-center gap-1 text-[#13213A]">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#317E33] inline-block"></span> Active Ambulance
+                </span>
+                <span class="flex items-center gap-1 text-[#13213A]">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#D63B2F] inline-block"></span> Patient (Kali Mandir)
+                </span>
+                <span class="flex items-center gap-1 text-[#13213A]">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#13213A] inline-block"></span> Sadar Hospital (Bed #4)
+                </span>
+              </div>
+              <span class="text-[#4A586E] font-mono-num text-[10px]" id="hubGpsCoords">
+                25.8596° N, 85.7908° E · Samastipur Pilot Grid
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main>
@@ -386,9 +455,44 @@
   </footer>
 
   <!-- SCRIPT -->
+  <script src="js/leaflet.js"></script>
   <script src="js/shared-state.js"></script>
+  <script src="js/live-map.js"></script>
   <script>
     (function() {
+      // Initialize Hub Live Map
+      let hubMap = null;
+      if (window.AarogyaLinkMap) {
+        hubMap = AarogyaLinkMap.initTrackingMap('hubLiveMap', {
+          mode: 'patient',
+          simBtnId: 'hubMapSimBtn',
+          speedBadgeId: 'hubSpeedBadge',
+          etaBadgeId: 'hubEtaBadge',
+          coordsBadgeId: 'hubGpsCoords'
+        });
+      }
+
+      const simBtn = document.getElementById('hubMapSimBtn');
+      if (simBtn) {
+        simBtn.addEventListener('click', () => {
+          if (hubMap) hubMap.toggleSimulation();
+        });
+      }
+
+      const focusBtn = document.getElementById('hubMapFocusBtn');
+      if (focusBtn) {
+        focusBtn.addEventListener('click', () => {
+          if (hubMap) hubMap.focusAmbulance();
+        });
+      }
+
+      const fitBtn = document.getElementById('hubMapFitBtn');
+      if (fitBtn) {
+        fitBtn.addEventListener('click', () => {
+          if (hubMap) hubMap.fitRoute();
+        });
+      }
+
       AarogyaLink.subscribe((state, eventType) => {
         updateQuadUI(state);
       });

@@ -107,11 +107,15 @@
       id: 'BR-33-P-4821',
       driverName: 'Rajesh Kumar',
       driverContact: '+91 94310 88219',
-      currentLat: 25.850,
-      currentLng: 85.780,
+      currentLat: 25.8596,
+      currentLng: 85.7908,
+      speedKmH: 42,
+      headingDeg: 35,
+      simProgress: 0.5,
+      simActive: false,
       etaToPatient: 4,
       etaToHospital: 7,
-      distanceKm: 2.6,
+      distanceKm: 1.8,
       gear: {
         oxygen: { ready: true, label: 'Oxygen Tank (92%)' },
         suction: { ready: false, label: 'Suction Pump (Missing)' }, // Triggers missing-gear early alert
@@ -273,27 +277,79 @@
       if (step === 'idle') {
         newState.hospital.lockState = 'PENDING';
         newState.ambulance.driverStage = 'Available on Shift';
+        newState.ambulance.currentLat = 25.8505;
+        newState.ambulance.currentLng = 85.7765;
+        newState.ambulance.headingDeg = 35;
+        newState.ambulance.speedKmH = 0;
+        newState.ambulance.etaToPatient = 4;
+        newState.ambulance.distanceKm = 2.6;
+        newState.ambulance.simProgress = 0.0;
         newState.reroute.status = 'pending';
       } else if (step === 'dispatched') {
         newState.hospital.lockState = 'PENDING';
         newState.ambulance.driverStage = 'Accepted SOS · To Pickup';
+        newState.ambulance.currentLat = 25.8529;
+        newState.ambulance.currentLng = 85.7801;
+        newState.ambulance.headingDeg = 42;
+        newState.ambulance.speedKmH = 45;
+        newState.ambulance.etaToPatient = 3;
+        newState.ambulance.distanceKm = 1.4;
+        newState.ambulance.simProgress = 0.5;
         playSound('siren');
       } else if (step === 'confirmed') {
         newState.hospital.lockState = 'CONFIRMED';
         newState.ambulance.driverStage = 'En Route to Hospital';
+        newState.ambulance.currentLat = 25.8596;
+        newState.ambulance.currentLng = 85.7908;
+        newState.ambulance.headingDeg = 48;
+        newState.ambulance.speedKmH = 42;
+        newState.ambulance.etaToHospital = 5;
+        newState.ambulance.distanceKm = 1.8;
+        newState.ambulance.simProgress = 0.5;
         playSound('success');
       } else if (step === 'reroute') {
         newState.reroute.status = 'pending';
         newState.ambulance.driverStage = 'Standby Reroute Prompt';
+        newState.ambulance.currentLat = 25.8628;
+        newState.ambulance.currentLng = 85.7952;
+        newState.ambulance.headingDeg = 28;
+        newState.ambulance.speedKmH = 40;
+        newState.ambulance.etaToHospital = 4;
+        newState.ambulance.distanceKm = 1.2;
+        newState.ambulance.simProgress = 0.4;
         playSound('alert');
       } else if (step === 'arrived') {
         newState.ambulance.driverStage = 'Handover Complete ✓';
         newState.hospital.lockState = 'CONFIRMED';
+        newState.ambulance.currentLat = 25.8640;
+        newState.ambulance.currentLng = 85.7975;
+        newState.ambulance.headingDeg = 45;
+        newState.ambulance.speedKmH = 0;
+        newState.ambulance.etaToHospital = 0;
+        newState.ambulance.distanceKm = 0.0;
+        newState.ambulance.simProgress = 1.0;
         playSound('chime');
       }
 
       saveAndBroadcast(newState, 'DEMO_STEP_CHANGED', { step });
       showToast('🎬', 'Scenario Synchronized', `All portals updated to: ${step.toUpperCase()}`);
+    },
+
+    setAmbulancePosition: (lat, lng, heading = 35, speed = 42, eta = 4, distance = 1.8, progress = 0.5) => {
+      const newState = Object.assign({}, currentState);
+      newState.ambulance.currentLat = lat;
+      newState.ambulance.currentLng = lng;
+      newState.ambulance.headingDeg = heading;
+      newState.ambulance.speedKmH = speed;
+      newState.ambulance.distanceKm = distance;
+      if (newState.demoStep === 'dispatched') {
+        newState.ambulance.etaToPatient = eta;
+      } else {
+        newState.ambulance.etaToHospital = eta;
+      }
+      newState.ambulance.simProgress = progress;
+      newState.lastUpdate = Date.now();
+      saveAndBroadcast(newState, 'AMBULANCE_MOVED', { lat, lng, heading, speed, eta, distance, progress });
     },
 
     triggerSos: (opts = {}) => {
